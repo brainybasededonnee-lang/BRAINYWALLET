@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BRAINY WALLET — Dashboard</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root{
+    --bg:#f3f6f9;
+    --green-1:#0f7a2d;
+    --green-2:#0b6f2a;
+    --accent:#10b981;
+    --card-bg:#ffffff;
+    --muted:#6b7280;
+    --primary:#0b76ef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#111}
+  header{background:#fff;padding:14px 18px;border-bottom:1px solid #e6eef6;display:flex;align-items:center;justify-content:space-between}
+  header h1{margin:0;font-size:18px;color:var(--primary);letter-spacing:0.6px}
+  .container{max-width:980px;margin:18px auto;padding:0 16px}
+  /* big balance card */
+  .balance-card{
+    background: linear-gradient(90deg,var(--green-1),#0fa64a 60%);
+    color:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow: 0 12px 30px rgba(6,60,20,0.18);
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+  }
+  .balance-left{flex:1}
+  .balance-right{width:220px;text-align:right}
+  .label{font-size:13px;opacity:0.9}
+  .big{font-size:36px;font-weight:800;margin-top:6px}
+  .small-boxes{display:flex;gap:12px;margin-top:18px}
+  .small-box{background:rgba(255,255,255,0.08);padding:12px;border-radius:10px;flex:1}
+  .small-box .value{font-weight:800;font-size:18px}
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+  .tile{background:var(--card-bg);padding:14px;border-radius:12px;text-align:center;box-shadow:0 6px 18px rgba(3,12,30,0.06);cursor:pointer}
+  .tile .icon{font-size:22px;margin-bottom:8px;color:var(--muted)}
+  .tile .title{font-weight:700;color:#222}
+  /* charts & details */
+  .panel{display:grid;grid-template-columns:1fr 360px;gap:12px;margin-top:18px}
+  .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(3,12,30,0.06)}
+  pre{white-space:pre-wrap;background:#f8fafb;padding:10px;border-radius:8px;color:#333}
+  /* responsive */
+  @media(max-width:900px){
+    .panel{grid-template-columns:1fr}
+    .balance-right{display:none}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* simple modal */
+  .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:white;padding:18px;border-radius:12px;max-width:420px;width:100%}
+  .close-btn{background:#eee;border-radius:8px;padding:6px 10px;border:none;cursor:pointer}
+  .muted{color:var(--muted);font-size:13px}
+  .hint{font-size:13px;color:#0b76ef;margin-top:8px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BRAINY WALLET</h1>
+  <div class="muted">Plateforme interne</div>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN (email + userId) -->
+  <div id="loginSection" class="card" style="margin-top:18px">
+    <h2>Connexion client</h2>
+    <div class="muted">Saisissez votre email et votre User ID pour accéder au dashboard</div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input id="loginEmail" placeholder="email" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef9">
+      <input id="loginId" placeholder="User ID (ex: BW-20251121-9)" style="flex:0 0 240px;padding:10px;border-radius:8px;border:1px solid #e6eef9">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <button class="primary" id="loginBtn" style="background:var(--primary);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer" onclick="login()">Se connecter</button>
+      <div id="loginMsg" class="muted"></div>
+    </div>
+    <div class="hint">sécurisé<strong> </strong> </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboardSection" style="display:none">
+    <!-- Balance card -->
+    <div class="balance-card">
+      <div class="balance-left">
+        <div class="label">Bienvenue,</div>
+        <div id="clientName" style="font-weight:900;font-size:20px">Nom Client</div>
+
+        <div class="label" style="margin-top:8px">Solde principal</div>
+        <div class="big" id="mainBalance">0 FCFA</div>
+
+        <div class="small-boxes">
+          <div class="small-box">
+            <div class="label">Solde Carte</div>
+            <div class="value" id="cardBalance">0 FCFA</div>
+          </div>
+          <div class="small-box">
+            <div class="label">Dette</div>
+            <div class="value" id="debtAmount">0 FCFA</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="balance-right">
+        <div style="text-align:right;color:rgba(255,255,255,0.9)">Dernière activité</div>
+        <div id="lastAct" class="muted" style="margin-top:8px;color:rgba(255,255,255,0.9)"></div>
+        <div style="margin-top:18px">
+          <button class="close-btn" style="background:rgba(255,255,255,0.12);color:white" onclick="showCardInfo()">Voir carte</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tiles -->
+    <div class="tiles">
+      <div class="tile" onclick="onRetrait()">
+        <div class="icon">⬇️</div>
+        <div class="title">Retrait</div>
+        <div class="muted">Demande de retrait via WhatsApp</div>
+      </div>
+
+      <div class="tile" onclick="onDepot()">
+        <div class="icon">💳</div>
+        <div class="title">Dépôt</div>
+        <div class="muted">Envoyer une demande de dépôt</div>
+      </div>
+
+      <div class="tile" onclick="showCardInfo()">
+        <div class="icon">💳</div>
+        <div class="title">Carte virtuelle</div>
+        <div class="muted">Afficher infos carte</div>
+      </div>
+    </div>
+
+    <!-- Charts & Info -->
+    <div class="panel">
+      <div class="card">
+        <h3>Opérations récentes</h3>
+        <div id="opsList" class="muted">Aucune opération</div>
+        <h4 style="margin-top:12px">Historique</h4>
+        <canvas id="barChart" style="height:160px"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Répartition</h3>
+        <canvas id="pieChart" style="height:220px"></canvas>
+        <div style="margin-top:10px" class="muted">Solde principal / Carte / Dette</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal (card info) -->
+<div id="modal" style="display:none" class="modal-back" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Carte virtuelle</strong>
+      <button class="close-btn" onclick="closeModal()">Fermer</button>
+    </div>
+    <div style="margin-top:12px">
+      <div class="muted">Numéro</div>
+      <div id="cardPan" style="font-weight:800;font-size:18px;margin-top:6px">---- ---- ---- ----</div>
+
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <div>
+          <div class="muted">Expiry</div>
+          <div id="cardExp" style="font-weight:700;margin-top:6px">--/--</div>
+        </div>
+        <div>
+          <div class="muted">CVV</div>
+          <div id="cardCvv" style="font-weight:700;margin-top:6px">---</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="muted">Ne partagez jamais ces informations à personne ni sur une plateforme, afin d’éviter tout risque de piratage. En cas de non-respect des règles d’utilisation, notre équipe déclinera toute responsabilité.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CLIENTS — Modifie/ajoute ici les clients (SECTION UNIQUE)
+   Format:
+   {
+     id: "BW-20251121-9",
+     nom: "Nom Client",
+     email: "ex@ex.com",
+     solde: 313,
+     solde_carte: 0,
+     dette: 0,
+     last_activity: "21/11/2025 06:33",
+     ops: [ {date: "2025-11-28T10:00:00", type:"DEPOSIT", montant:100, target:"compte_simple", commentaire:""} ],
+     carte: { pan:"4321 5678 9012 3456", exp:"12/27", cvv:"123" }
+   }
+   ============================================================ */
+const clients = [
+  {
+    id: "BW-20251121-9",
+    nom: "gbg",
+    email: "gbg@example.com",
+    solde: 313,
+    solde_carte: 0,
+    dette: 0,
+    last_activity: "21/11/2025 06:33",
+    ops: [
+      { date: "2025-11-21T06:33:00", type: "DEPOSIT", montant: 313, target: "compte_simple", commentaire: "Initial" }
+    ],
+    carte: { pan: "4321 5678 9012 3456", exp: "12/27", cvv: "123" }
+  },
+
+  /* Exemple d'un autre client */
+  {
+    id: "BW-20251122-01",
+    nom: "Koffi",
+    email: "koffi@example.com",
+    solde: 1200,
+    solde_carte: 0,
+    dette: 0,
+    last_activity: "26/11/2025 10:12",
+    ops: [
+      { date: "2025-11-25T09:00:00", type: "DEPOSIT", montant: 1000, target: "compte_simple", commentaire: "" },
+      { date: "2025-11-26T10:00:00", type: "WITHDRAW", montant: 200, target: "compte_simple", commentaire: "" }
+    ],
+    carte: { pan: "5555 6666 7777 8888", exp: "11/28", cvv: "987" }
+  }
+];
+/* ============================================================ */
+
+/* Security note */
+console.warn("ATTENTION: les informations clients (carte, ccv) sont stockées en clair dans ce fichier HTML. Ceci n'est PAS sécurisé pour un environnement réel.");
+
+/* ---------- State ---------- */
+let currentClient = null;
+
+/* ---------- Helpers ---------- */
+function findClientByIdAndEmail(id, email) {
+  if (!id || !email) return null;
+  const a = clients.find(c => String(c.id).trim().toLowerCase() === String(id).trim().toLowerCase()
+                           && String(c.email).trim().toLowerCase() === String(email).trim().toLowerCase());
+  return a || null;
+}
+function formatFcfa(x){ return Number(x || 0).toLocaleString() + " FCFA"; }
+
+/* ---------- Login ---------- */
+function login(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const id = document.getElementById("loginId").value.trim();
+  const msg = document.getElementById("loginMsg");
+  msg.textContent = ""; msg.style.color = "#333";
+
+  const c = findClientByIdAndEmail(id, email);
+  if (!c) {
+    msg.textContent = "Identifiants incorrects ou client non trouvé";
+    msg.style.color = "crimson";
+    return;
+  }
+  currentClient = c;
+  msg.textContent = "Connexion réussie — Bonjour " + c.nom;
+  msg.style.color = "green";
+  showDashboard();
+}
+
+/* ---------- Show dashboard ---------- */
+let pieChart=null, barChart=null;
+function showDashboard(){
+  document.getElementById("loginSection").style.display = "none";
+  document.getElementById("dashboardSection").style.display = "block";
+
+  // populate main fields
+  document.getElementById("clientName").textContent = currentClient.nom;
+  document.getElementById("mainBalance").textContent = formatFcfa(currentClient.solde);
+  document.getElementById("cardBalance").textContent = formatFcfa(currentClient.solde_carte);
+  document.getElementById("debtAmount").textContent = formatFcfa(currentClient.dette);
+  document.getElementById("lastAct").textContent = currentClient.last_activity || "";
+
+  // operations list
+  renderOps();
+
+  // charts
+  updateCharts();
+}
+
+/* ---------- Operations rendering ---------- */
+function renderOps(){
+  const opsList = document.getElementById("opsList");
+  if (!currentClient.ops || currentClient.ops.length === 0) {
+    opsList.textContent = "Aucune opération";
+    return;
+  }
+  // sort desc by date
+  const sorted = currentClient.ops.slice().sort((a,b)=> new Date(b.date) - new Date(a.date));
+  opsList.innerHTML = sorted.slice(0,10).map(o => `${new Date(o.date).toLocaleString()} — ${o.type} — ${formatFcfa(o.montant)} ${o.commentaire?(' — '+o.commentaire):''}`).join("<br>");
+}
+
+/* ---------- Charts ---------- */
+function updateCharts(){
+  // pie: solde / carte / dette
+  const pieData = [currentClient.solde || 0, currentClient.solde_carte || 0, currentClient.dette || 0];
+  if (pieChart) {
+    pieChart.data.datasets[0].data = pieData;
+    pieChart.update();
+  } else {
+    pieChart = new Chart(document.getElementById("pieChart"), {
+      type: 'pie',
+      data: { labels: ['Solde', 'Carte', 'Dette'], datasets: [{ data: pieData, backgroundColor: ['#0b76ef','#38bdf8','#ef4444'] }] }
+    });
+  }
+
+  // bar: last N ops
+  const ops = (currentClient.ops || []).slice(-8);
+  const labels = ops.map(o => new Date(o.date).toLocaleDateString());
+  const values = ops.map(o => (o.type === 'WITHDRAW' ? -1 : 1) * Number(o.montant || 0));
+  if (barChart) {
+    barChart.data.labels = labels;
+    barChart.data.datasets[0].data = values;
+    barChart.update();
+  } else {
+    barChart = new Chart(document.getElementById("barChart"), {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ label: 'Montant', data: values, backgroundColor: '#0b76ef' }] },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+  }
+}
+
+/* ---------- Actions: Depot / Retrait ---------- */
+function onDepot(){
+  if (!currentClient) return alert("Connectez-vous d'abord");
+  // open WhatsApp to +22893367262
+  const phone = "22893367262";
+  const text = encodeURIComponent(`Demande de DEPOT - Client: ${currentClient.nom} (${currentClient.id}) - Tel: ${currentClient.email}`);
+  window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+}
+function onRetrait(){
+  if (!currentClient) return alert("Connectez-vous d'abord");
+  const phone = "22893367262";
+  const text = encodeURIComponent(`Demande de RETRAIT - Client: ${currentClient.nom} (${currentClient.id}) - Tel: ${currentClient.email}`);
+  window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+}
+
+/* ---------- Card modal ---------- */
+function showCardInfo(){
+  if (!currentClient) return alert("Connectez-vous d'abord");
+  document.getElementById("cardPan").textContent = currentClient.carte ? currentClient.carte.pan : "---- ---- ---- ----";
+  document.getElementById("cardExp").textContent = currentClient.carte ? currentClient.carte.exp : "--/--";
+  document.getElementById("cardCvv").textContent = currentClient.carte ? currentClient.carte.cvv : "---";
+  document.getElementById("modal").style.display = "flex";
+}
+function closeModal(e){
+  if (e) e.stopPropagation && e.stopPropagation();
+  document.getElementById("modal").style.display = "none";
+}
+
+/* ---------- Init on load ---------- */
+window.addEventListener('DOMContentLoaded', function(){
+  // initialize empty charts so layout is correct
+  pieChart = null; barChart = null;
+  // ensure first section visible
+  document.getElementById("loginSection").style.display = "block";
+  document.getElementById("dashboardSection").style.display = "none";
+});
+</script>
+
+</body>
+</html>
