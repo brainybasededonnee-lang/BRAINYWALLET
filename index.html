@@ -250,7 +250,7 @@ function findClientByIdAndEmail(id, email) {
                            && String(c.email).trim().toLowerCase() === String(email).trim().toLowerCase());
   return a || null;
 }
-function formatFcfa(x){ return Number(x || 0).toLocaleString() + " FCFA"; }
+function formatFcfa(x){ return Number(x || 0).toLocaleString() + " USD"; }
 
 /* ---------- Login ---------- */
 function login(){
@@ -374,6 +374,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 </body>
 </html>
+
 
 
 
