@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brainy - Suivi de Commande</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+<div id="clientPage" class="flex items-center justify-center min-h-screen px-4">
+  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
+    <div class="flex justify-center mb-4">
+      <div class="bg-blue-100 p-4 rounded-full">
+        <span class="text-3xl">📦</span>
+      </div>
+    </div>
+    <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Suivi de Commande</h1>
+
+    <div class="relative mb-6">
+      <input id="code" type="text" placeholder="Entrez votre code de suivi..." class="w-full p-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm text-slate-700" />
+    </div>
+
+    <button onclick="verifierCommande()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 rounded-xl transition shadow-lg shadow-blue-500/30">
+      Vérifier le statut
+    </button>
+
+    <div id="resultat" class="mt-6"></div>
+
+    <div class="mt-8 text-center border-t pt-4">
+      <button onclick="showAdmin()" class="text-xs text-slate-400 hover:text-slate-600 transition font-medium">
+        Brainy Agency
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="adminPage" class="hidden min-h-screen pb-12">
+  <div class="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+      <span>⚙️</span> Dashboard Admin
+    </h1>
+    <button onclick="showClient()" class="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition">
+      ← Retour Client
+    </button>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 mt-8 space-y-8">
+    
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+      <h2 class="text-lg font-semibold mb-6 text-slate-700 border-b pb-2">Créer / Modifier une commande</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Code Commande</label>
+          <input id="adminCode" placeholder="Ex: CMD123" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Nom du client</label>
+          <input id="nom" placeholder="Nom complet" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Téléphone</label>
+          <input id="tel" placeholder="Numéro" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Lieu de livraison</label>
+          <input id="livraison" placeholder="Adresse" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Produits</label>
+          <input id="produits" placeholder="Description" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Poids</label>
+          <input id="poids" placeholder="En kg" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">CBM</label>
+          <input id="cbm" placeholder="Volume" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Date de paiement</label>
+          <input id="paiement" placeholder="JJ/MM/AAAA" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Date d'arrivée</label>
+          <input id="arrivee" placeholder="JJ/MM/AAAA" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Taxe</label>
+          <input id="taxe" placeholder="Montant" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Dette</label>
+          <input id="dette" placeholder="Montant restant" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Montant total payé</label>
+          <input id="total" placeholder="En FCFA" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+        </div>
+        
+        <div class="md:col-span-2 lg:col-span-4">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Statut actuel</label>
+          <select id="statut" class="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50 font-medium">
+            <option value="Commande en préparation chez Brainy Agency">⏳ Commande en préparation chez Brainy Agency</option>
+            <option value="Commande en preparation en chine">🏭 Commande en préparation en Chine</option>
+            <option value="Commande en transistion de chine vers lomé">🚢 Commande en transition de Chine vers Lomé</option>
+            <option value="Commande arriver au port de lomé en cours de dedouement">🛃 Commande arrivée au port de Lomé (dédouanement)</option>
+            <option value="Commande arriver chez Brainy Agency veiller passer pour recuperer">✅ Commande arrivée chez Brainy Agency, veuillez récupérer</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="ajouterCommande()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-lg transition shadow-md shadow-green-500/20">
+          💾 Enregistrer / Modifier
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h2 class="text-lg font-semibold text-slate-700">Liste des commandes</h2>
+        <div class="relative w-full md:w-72">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔎</span>
+          <input id="searchInput" onkeyup="filtrerTableau()" placeholder="Rechercher un client..." class="border border-slate-300 py-2 pl-10 pr-4 w-full rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50">
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="w-full text-left border-collapse whitespace-nowrap">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 text-sm uppercase tracking-wider">
+              <th class="p-4 font-semibold">Code</th>
+              <th class="p-4 font-semibold">Nom</th>
+              <th class="p-4 font-semibold">Téléphone</th>
+              <th class="p-4 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-200 text-sm">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc } 
+from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIza...",
+  authDomain: "site-de-suivi-c31be.firebaseapp.com",
+  projectId: "site-de-suivi-c31be"
+});
+
+const db = getFirestore(app);
+const ADMIN_PASSWORD = "BRAINY AGENCY 96368928";
+const $ = id => document.getElementById(id);
+
+let allData = [];
+
+/* ================= CLIENT PRO ================= */
+window.verifierCommande = async function () {
+  const code = $("code").value;
+  const snap = await getDoc(doc(db, "commandes", code));
+  const res = $("resultat");
+
+  if (!snap.exists()) {
+    res.innerHTML = `<div class="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-center font-medium animate-pulse">Commande introuvable ❌</div>`;
+    return;
+  }
+
+  const d = snap.data();
+  const statut = (d.statut || "").toLowerCase();
+
+  res.innerHTML = `
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-6 mt-6">
+
+    <div class="text-center border-b pb-4">
+      <h2 class="text-xl font-bold text-slate-800">Détails du colis</h2>
+      <p class="text-sm text-slate-500 font-mono mt-1">Code: <span class="text-blue-600 font-bold">${code}</span></p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 text-sm text-slate-700">
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">👤 Nom</b>${d.nom || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📞 Téléphone</b>${d.tel || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📍 Livraison</b>${d.livraison || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">⚖️ Poids</b>${d.poids || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100 col-span-2"><b class="block text-slate-400 text-xs uppercase mb-1">📦 Produits</b>${d.produits || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📐 CBM</b>${d.cbm || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">💳 Départ en Chine</b>${d.paiement || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📅 Arrivée à Lomé</b>${d.arrivee || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">🧾 Taxe</b>${d.taxe || "-"}</p>
+    </div>
+
+    <div class="bg-red-50 text-red-700 p-3 rounded-lg text-center border border-red-100">
+      <p class="text-sm"><b>💸 Dette restante :</b> ${d.dette || "0"} FCFA</p>
+    </div>
+
+    <div class="bg-blue-600 text-white p-4 rounded-xl text-center shadow-md">
+      <p class="text-xs text-blue-200 uppercase tracking-wider mb-1">📊 Statut actuel</p>
+      <p class="text-sm md:text-base font-semibold">${d.statut || "-"}</p>
+    </div>
+
+    <div class="space-y-3 text-sm pt-2 px-2">
+      <div class="flex items-center gap-3 ${statut ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Commande enregistrée
+      </div>
+      <div class="flex items-center gap-3 ${statut.includes("chine") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("chine") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En préparation en Chine
+      </div>
+      <div class="flex items-center gap-3 ${statut.includes("transit") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("transit") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En transit maritime/aérien
+      </div>
+      <div class="flex items-center gap-3 ${statut.includes("lomé") || statut.includes("lome") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("lomé") || statut.includes("lome") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Arrivé à Lomé (Dédouanement)
+      </div>
+      <div class="flex items-center gap-3 ${statut.includes("recuperer") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("recuperer") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Prêt à récupérer en agence
+      </div>
+    </div>
+
+    <div class="bg-green-50 text-green-800 p-4 rounded-xl text-center border border-green-200 shadow-sm mt-4">
+      <p class="text-sm text-green-600 uppercase mb-1">💰 Montant total payé</p>
+      <p class="text-xl font-bold">${d.total || "0"} FCFA</p>
+    </div>
+
+  </div>`;
+};
+
+/* ================= ADMIN ================= */
+window.ajouterCommande = async function () {
+  const code = $("adminCode").value;
+  const snap = await getDoc(doc(db, "commandes", code));
+  const old = snap.exists() ? snap.data() : {};
+
+  await setDoc(doc(db, "commandes", code), {
+    nom: $("nom").value,
+    tel: $("tel").value,
+    livraison: $("livraison").value,
+    produits: $("produits").value,
+    poids: $("poids").value,
+    cbm: $("cbm").value,
+    paiement: $("paiement").value,
+    arrivee: $("arrivee").value,
+    taxe: $("taxe").value,
+    dette: $("dette").value,
+    statut: $("statut").value,
+    total: $("total").value,
+    visible: old.visible ?? true
+  });
+
+  chargerTableau();
+  alert("✅ Commande enregistrée avec succès !");
+};
+
+async function chargerTableau() {
+  const snap = await getDocs(collection(db, "commandes"));
+  const table = $("tableBody");
+  table.innerHTML = "";
+  allData = [];
+
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
+    const code = docSnap.id;
+
+    allData.push({ code, ...d });
+
+    table.innerHTML += `
+    <tr class="hover:bg-slate-50 transition group">
+      <td class="p-4 font-mono text-blue-600 font-medium">${code}</td>
+      <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
+      <td class="p-4 text-slate-600">${d.tel || "-"}</td>
+      <td class="p-4 text-right space-x-2">
+        <button onclick="modifier('${code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
+        <button onclick="partager('${code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
+        <button onclick="toggleVisible('${code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
+          ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
+        </button>
+      </td>
+    </tr>`;
+  });
+}
+
+/* ================= ACTIONS ================= */
+window.modifier = async code => {
+  const d = (await getDoc(doc(db, "commandes", code))).data();
+  Object.keys(d).forEach(k => $(k) && ($(k).value = d[k]));
+  $("adminCode").value = code;
+  // Scroll fluide vers le haut pour éditer
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.partager = async code => {
+  const d = (await getDoc(doc(db, "commandes", code))).data();
+  window.open(`https://wa.me/${d.tel}?text=${encodeURIComponent("📦 Bonjour " + d.nom + ", voici le statut de votre commande : " + d.statut)}`);
+};
+
+window.toggleVisible = async (code, current) => {
+  await updateDoc(doc(db, "commandes", code), { visible: !current });
+  chargerTableau();
+};
+
+/* ================= NAV ================= */
+window.showAdmin = () => {
+  const pass = prompt("Mot de passe administrateur:");
+  if (pass !== ADMIN_PASSWORD) return alert("Mot de passe incorrect ❌");
+  $("clientPage").classList.add("hidden");
+  $("adminPage").classList.remove("hidden");
+  chargerTableau();
+};
+
+window.showClient = () => {
+  $("adminPage").classList.add("hidden");
+  $("clientPage").classList.remove("hidden");
+  $("code").value = "";
+  $("resultat").innerHTML = "";
+};
+
+window.filtrerTableau = () => {
+  const val = $("searchInput").value.toLowerCase();
+  $("tableBody").innerHTML = allData
+    .filter(d => d.nom?.toLowerCase().includes(val) || d.code.toLowerCase().includes(val))
+    .map(d => `
+    <tr class="hover:bg-slate-50 transition group">
+      <td class="p-4 font-mono text-blue-600 font-medium">${d.code}</td>
+      <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
+      <td class="p-4 text-slate-600">${d.tel || "-"}</td>
+      <td class="p-4 text-right space-x-2">
+        <button onclick="modifier('${d.code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
+        <button onclick="partager('${d.code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
+        <button onclick="toggleVisible('${d.code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
+          ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
+        </button>
+      </td>
+    </tr>
+    `)
+    .join("");
+};
+</script>
+
+</body>
+</html>

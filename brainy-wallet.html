@@ -1,0 +1,695 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRAINY WALLET (BW)</title>
+
+<style>
+body{
+  font-family: Arial,sans-serif;
+  background:#f0f6ff;
+  margin:0;
+}
+
+/* HEADER */
+header{
+  background:#007bff;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+header img{
+  width:80px;
+  border-radius:50%;
+}
+
+/* CONTAINER */
+.container{
+  width:90%;
+  max-width:700px;
+  margin:30px auto;
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+.hidden{display:none;}
+h2{text-align:center;color:#007bff;}
+
+input, button, select{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+  box-sizing: border-box;
+}
+button{
+  background:#007bff;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+.message{text-align:center;font-weight:bold;margin-top:10px;}
+
+/* WALLET CARD */
+.wallet-card{
+  background:linear-gradient(135deg,#0a7a18,#0f9d2f);
+  color:white;
+  border-radius:18px;
+  padding:20px;
+}
+.wallet-header{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+}
+.wallet-main{
+  margin:20px 0;
+}
+.amount{
+  font-size:28px;
+  font-weight:bold;
+}
+.label{
+  font-size:14px;
+  opacity:0.9;
+}
+.wallet-footer{
+  display:flex;
+  gap:10px;
+}
+.box{
+  flex:1;
+  background:rgba(255,255,255,0.15);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+.box-title{font-size:12px;}
+.box-amount{font-size:16px;font-weight:bold;margin-top:5px;}
+
+/* Tombola & Actions */
+.tombola, .actions-section, .history-notif-section {
+  margin-top:20px;
+  text-align:center;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+.tombola input, .tombola button{
+  width:auto;
+  margin:5px;
+  padding:8px;
+}
+#tombolaGrid{
+  display:grid;
+  grid-template-columns: repeat(4, 50px);
+  gap:8px;
+  justify-content:center;
+  margin-top:15px;
+}
+.tombolaCell{
+  width:50px;
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e0e0e0;
+  border-radius:8px;
+  font-weight:bold;
+  transition: background 0.2s;
+}
+.tombolaCell.active{
+  background: #ffcc00;
+}
+.tombolaCell.winner{
+  background: #28a745;
+  color:white;
+}
+
+/* HISTORIQUE ET NOTIFICATIONS */
+.scroll-box {
+  max-height: 250px;
+  overflow-y: auto;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+.hist-item { border-bottom: 1px dashed #ccc; padding: 8px 0; display:flex; justify-content: space-between; align-items: center;}
+.hist-item:last-child { border-bottom: none; }
+.hist-positive { color: green; font-weight: bold; }
+.hist-negative { color: red; font-weight: bold; }
+.hist-neutral { color: #555; font-weight: bold; }
+
+.notif-item { padding: 10px; margin-bottom: 8px; border-radius: 5px; font-size: 13px; line-height:1.4; }
+.notif-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.notif-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.notif-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+/* ADMIN DASHBOARD */
+.admin-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.admin-stats{
+  display:flex;
+  justify-content:space-around;
+  margin-top:15px;
+  padding:10px;
+  background:#f1f1f1;
+  border-radius:8px;
+  font-weight:bold;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-table{
+  width:100%;
+  border-collapse: collapse;
+  margin-top:15px;
+  font-size: 14px;
+}
+.admin-table th, .admin-table td{
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:center;
+}
+.admin-table th{
+  background:#007bff;
+  color:white;
+}
+.admin-action button{
+  padding:5px 10px;
+  margin:2px 0;
+  font-size:12px;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.timer {
+    font-size: 12px;
+    color: #d9534f;
+    font-weight: bold;
+    display: block;
+    margin-top: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="">
+  <h1>BRAINY WALLET (BW)</h1>
+</header>
+
+<div class="container" id="register-section">
+<h2>Inscription</h2>
+<input id="fullName" placeholder="Nom complet">
+<input id="phone" placeholder="Téléphone">
+<input id="email" placeholder="Email">
+<input id="address" placeholder="Adresse">
+<input id="paymentNumber" placeholder="Numéro Flooz ou Mixx">
+<input id="inviteCode" placeholder="Code d’invitation">
+<input id="password" type="password" placeholder="Mot de passe">
+<button onclick="register()">S’inscrire</button>
+<p class="message" id="register-message"></p>
+<p style="text-align:center">
+Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
+</p>
+</div>
+
+<div class="container hidden" id="login-section">
+<h2>Connexion</h2>
+<input id="login-email" placeholder="Email">
+<input id="login-password" type="password" placeholder="Mot de passe">
+<button onclick="login()">Se connecter</button>
+<p class="message" id="login-message"></p>
+</div>
+
+<div class="container hidden" id="dashboard-section">
+
+<div class="wallet-card">
+  <div class="wallet-header">
+    <span id="clientName">Nom Client</span>
+    <span>👁</span>
+  </div>
+
+  <div class="wallet-main">
+    <div class="amount" id="balanceAmount">0 FCFA</div>
+    <div class="label">Solde disponible</div>
+  </div>
+
+  <div class="wallet-footer">
+    <div class="box">
+      <div class="box-title">Solde total généré</div>
+      <div class="box-amount" id="totalGenerated">0 FCFA</div>
+    </div>
+    <div class="box">
+      <div class="box-title">Payé</div>
+      <div class="box-amount" id="totalWithdrawn">0 FCFA</div>
+    </div>
+  </div>
+</div>
+
+<br>
+<input type="number" id="withdrawAmount" placeholder="Montant retrait à demander">
+<button onclick="requestWithdrawal()">Demande de retrait</button>
+<p class="message" id="withdrawMessage"></p>
+
+<div class="tombola">
+  <h3>Jeu de Tombola</h3>
+  <input type="number" id="tombolaNumber" placeholder="Choisir un numéro 0-15" min="0" max="15">
+  <input type="number" id="tombolaBet" placeholder="Votre mise (100-10000 FCFA)" min="100" max="10000">
+  <button onclick="playTombola()">Lancer le jeu</button>
+  <div id="tombolaGrid"></div>
+  <div id="result"></div>
+</div>
+
+<div class="actions-section">
+  <h3>Acheter des Actions</h3>
+  <select id="actionName">
+    <option value="Action Standard">Action Standard</option>
+    <option value="Action Premium">Action Premium</option>
+    <option value="Action VIP">Action VIP</option>
+  </select>
+  <input type="number" id="actionStake" placeholder="Montant de la mise (FCFA)">
+  <select id="actionTime">
+    <option value="24 Heures">24 Heures</option>
+    <option value="7 Jours">7 Jours</option>
+    <option value="30 Jours">30 Jours</option>
+  </select>
+  <button onclick="buyAction()" style="background: #28a745;">Valider l'achat d'action</button>
+  <p class="message" id="actionMessage"></p>
+
+  <h4 style="text-align:left; color:#007bff; border-bottom:1px solid #ddd; padding-bottom:5px;">Mes actions en cours</h4>
+  <div id="clientActionsList" class="scroll-box"></div>
+</div>
+
+<div class="history-notif-section">
+  <h3 style="color:#e0a800;">🔔 Notifications Récentes</h3>
+  <div id="clientNotificationsList" class="scroll-box"></div>
+
+  <h3 style="color:#17a2b8;">📜 Historique des Transactions</h3>
+  <div id="clientHistoryList" class="scroll-box"></div>
+</div>
+
+<br>
+<button onclick="logout()" style="background:#dc3545;">Se déconnecter</button>
+</div>
+
+<div class="container hidden" id="admin-section" style="max-width: 900px;">
+<h2>Dashboard Admin</h2>
+
+<div class="admin-stats">
+  <div>Total Clients: <span id="totalClients">0</span></div>
+  <div>Solde Total: <span id="totalBalance">0 FCFA</span></div>
+  <div>Retraits En Attente: <span id="pendingRequests">0</span></div>
+</div>
+
+<input type="text" id="searchUser" placeholder="Rechercher par nom ou email..." oninput="loadAdminTable()">
+
+<div style="overflow-x:auto;">
+<table class="admin-table">
+<thead>
+<tr>
+<th>Nom</th>
+<th>Email</th>
+<th>Solde</th>
+<th>Retraits</th>
+<th>Actions Client</th> 
+<th>Menu</th>
+</tr>
+</thead>
+<tbody id="adminTableBody"></tbody>
+</table>
+</div>
+
+<button onclick="logout()" style="margin-top:10px;background:red;">Se déconnecter</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore,doc,setDoc,getDoc,updateDoc,collection,getDocs,arrayUnion } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVAmEneDsZ-f2HjpDx_OElvjDjPu1D2LI",
+  authDomain: "brainy-wallet.firebaseapp.com",
+  projectId: "brainy-wallet",
+  storageBucket: "brainy-wallet.firebasestorage.app",
+  messagingSenderId: "554152129336",
+  appId: "1:554152129336:web:997fe6b439d6ccac0707cd"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentUser=null;
+let timersIntervals = [];
+
+// Grille Tombola
+const tombolaGrid=document.getElementById("tombolaGrid");
+for(let i=0;i<16;i++){
+  const cell=document.createElement("div");
+  cell.className="tombolaCell";
+  cell.textContent=i;
+  tombolaGrid.appendChild(cell);
+}
+
+// UI Renders
+window.renderClientHistory = (historyArray) => {
+  const list = document.getElementById("clientHistoryList");
+  if(!historyArray || historyArray.length === 0){
+    list.innerHTML = "<i>Aucune transaction.</i>";
+    return;
+  }
+  const reversed = [...historyArray].reverse();
+  list.innerHTML = reversed.map((h) => {
+    let colorClass = h.amount > 0 ? "hist-positive" : (h.amount < 0 ? "hist-negative" : "hist-neutral");
+    let sign = h.amount > 0 ? "+" : "";
+    let dateStr = new Date(h.date).toLocaleString('fr-FR', {dateStyle: 'short', timeStyle: 'short'});
+    return `<div class="hist-item">
+      <div><strong>${h.type}</strong><br><span style="font-size:11px; color:#666;">${dateStr} | ${h.desc}</span></div>
+      <div class="${colorClass}">${sign}${h.amount} FCFA</div>
+    </div>`;
+  }).join("");
+};
+
+window.renderClientNotifications = (notifArray) => {
+  const list = document.getElementById("clientNotificationsList");
+  if(!notifArray || notifArray.length === 0){
+    list.innerHTML = "<i>Aucune notification.</i>";
+    return;
+  }
+  const reversed = [...notifArray].reverse();
+  list.innerHTML = reversed.map((n) => {
+    let dateStr = new Date(n.date).toLocaleString('fr-FR', {dateStyle: 'short', timeStyle: 'short'});
+    let typeClass = n.type === 'success' ? 'notif-success' : (n.type === 'error' ? 'notif-error' : 'notif-info');
+    return `<div class="notif-item ${typeClass}">
+      <div style="font-size:11px; margin-bottom:3px; opacity:0.8;">${dateStr}</div>
+      <div>${n.message}</div>
+    </div>`;
+  }).join("");
+};
+
+window.showLogin=()=>{
+  document.getElementById("register-section").classList.add("hidden");
+  document.getElementById("login-section").classList.remove("hidden");
+};
+
+window.register=async()=>{
+    const msg=document.getElementById("register-message");
+    msg.textContent="Création...";
+    try{
+        const email=document.getElementById("email").value;
+        const password=document.getElementById("password").value;
+        const userCred=await createUserWithEmailAndPassword(auth,email,password);
+        await setDoc(doc(db,"users",userCred.user.uid),{
+            fullName:document.getElementById("fullName").value,
+            phone:document.getElementById("phone").value,
+            email:email,
+            address:document.getElementById("address").value,
+            paymentNumber:document.getElementById("paymentNumber").value,
+            inviteCode:document.getElementById("inviteCode").value,
+            balance:0,
+            totalGenerated:0,
+            totalWithdrawn:0,
+            withdrawRequests:[],
+            actions:[],
+            history:[],
+            notifications:[],
+            createdAt:new Date()
+        });
+        msg.textContent="Compte créé ! ✔";
+        showLogin();
+    }catch(e){ msg.textContent=e.message; }
+};
+
+window.login=async()=>{
+    const msg=document.getElementById("login-message");
+    const email=document.getElementById("login-email").value;
+    const password=document.getElementById("login-password").value;
+
+    if(email==="mawoukobrainy@gmail.com" && password==="963689"){
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("admin-section").classList.remove("hidden");
+        loadAdminTable();
+        return;
+    }
+
+    try{
+        const userCred=await signInWithEmailAndPassword(auth,email,password);
+        currentUser = userCred.user;
+        const snap=await getDoc(doc(db,"users",currentUser.uid));
+        const user=snap.data();
+
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("dashboard-section").classList.remove("hidden");
+
+        clientName.textContent=user.fullName;
+        balanceAmount.textContent=user.balance+" FCFA";
+        totalGenerated.textContent=(user.totalGenerated||0)+" FCFA";
+        totalWithdrawn.textContent=(user.totalWithdrawn||0)+" FCFA";
+
+        renderClientActions(user.actions || []);
+        renderClientHistory(user.history || []);
+        renderClientNotifications(user.notifications || []);
+    }catch(e){ msg.textContent=e.message; }
+};
+
+window.logout=()=>{ location.reload(); };
+
+// --- ACTIONS & TIMER LOGIC ---
+window.buyAction = async () => {
+  if(!currentUser) return;
+  const stake = parseInt(document.getElementById("actionStake").value);
+  const name = document.getElementById("actionName").value;
+  const timeStr = document.getElementById("actionTime").value;
+
+  if (isNaN(stake) || stake <= 0) return alert("Mise invalide");
+
+  const snap = await getDoc(doc(db,"users",currentUser.uid));
+  let userData = snap.data();
+  if (userData.balance < stake) return alert("Solde insuffisant");
+
+  const newAction = {
+    name: name,
+    stake: stake,
+    time: timeStr,
+    status: "en attente",
+    date: new Date().toISOString(),
+    expiryDate: null 
+  };
+
+  await updateDoc(doc(db,"users",currentUser.uid), { 
+    actions: arrayUnion(newAction),
+    history: arrayUnion({date: new Date().toISOString(), type: 'Achat Action', amount: 0, desc: `Attente: ${name}`})
+  });
+  location.reload();
+};
+
+window.renderClientActions = (actionsArray) => {
+  const list = document.getElementById("clientActionsList");
+  timersIntervals.forEach(clearInterval); // Nettoyer anciens timers
+  
+  if(actionsArray.length === 0){
+    list.innerHTML = "<i>Aucune action.</i>";
+    return;
+  }
+
+  list.innerHTML = actionsArray.map((act, index) => {
+    let color = act.status === "validé" ? "green" : "orange";
+    let timerId = `timer-${index}`;
+    return `<div style="padding: 10px 0; border-bottom: 1px dashed #ccc; text-align:left;">
+      <strong>${act.name}</strong> - ${act.stake} FCFA
+      <span style="float:right; color:${color}; font-weight:bold;">${act.status}</span>
+      ${act.status === "validé" ? `<span class="timer" id="${timerId}">Calcul du temps...</span>` : ''}
+    </div>`;
+  }).join("");
+
+  // Lancer les décomptes pour les actions validées
+  actionsArray.forEach((act, index) => {
+    if(act.status === "validé" && act.expiryDate){
+        startTimer(act.expiryDate, `timer-${index}`);
+    }
+  });
+};
+
+function startTimer(expiryDateStr, elementId) {
+    const target = new Date(expiryDateStr).getTime();
+    const timerFunc = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = target - now;
+        const el = document.getElementById(elementId);
+        if(!el) return clearInterval(timerFunc);
+
+        if (diff <= 0) {
+            el.textContent = "Action Terminée !";
+            el.style.color = "green";
+            clearInterval(timerFunc);
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            el.textContent = `Temps restant: ${days}j ${hours}h ${mins}m ${secs}s`;
+        }
+    }, 1000);
+    timersIntervals.push(timerFunc);
+}
+
+// --- ADMIN FUNCTIONS ---
+async function loadAdminTable(){
+  const tbody=document.getElementById("adminTableBody");
+  tbody.innerHTML="";
+  const querySnapshot = await getDocs(collection(db,"users"));
+  
+  let totalC=0, totalB=0, pend=0;
+
+  querySnapshot.forEach(docSnap=>{
+    const user=docSnap.data();
+    totalC++; totalB += (user.balance||0);
+    pend += (user.withdrawRequests || []).filter(r=>r.status==="en attente").length;
+
+    const tr=document.createElement("tr");
+
+    const actionsHTML=(user.actions || []).map((a,i)=>{
+      let color = a.status === "validé" ? "green" : "orange";
+      let actionBtn = a.status === "en attente" 
+        ? `<button onclick='adminValidateAction("${docSnap.id}", ${i})' style="background:#28a745; font-size:10px;">Valider & Prélèver</button>` 
+        : `<button onclick='adminPayGain("${docSnap.id}", ${i})' style="background:#ffc107; color:black; font-size:10px;">Payer Gain</button>`;
+      
+      return `<div style="border-bottom:1px solid #eee; padding:4px;">
+        <span style="color:${color}; font-weight:bold;">${a.name} (${a.stake}F)</span><br>${actionBtn}
+      </div>`;
+    }).join("");
+
+    tr.innerHTML=`
+      <td>${user.fullName}</td>
+      <td>${user.email}</td>
+      <td><strong>${user.balance}</strong></td>
+      <td>${(user.withdrawRequests||[]).length} req.</td>
+      <td>${actionsHTML || '-'}</td>
+      <td class="admin-action">
+        <button onclick='validateWithdrawal("${docSnap.id}",0)' style="background:green;">Valider Retrait</button>
+        <button onclick='addDepositPrompt("${docSnap.id}")' style="background:blue;">Ajouter Dépôt</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  totalClients.textContent=totalC; totalBalance.textContent=totalB+" FCFA"; pendingRequests.textContent=pend;
+}
+
+window.adminValidateAction = async (uid, idx) => {
+    const snap = await getDoc(doc(db,"users",uid));
+    let userData = snap.data();
+    let act = userData.actions[idx];
+
+    if(userData.balance < act.stake) return alert("Solde client insuffisant");
+
+    // Calcul de la date d'expiration
+    let expiry = new Date();
+    if(act.time === "24 Heures") expiry.setHours(expiry.getHours() + 24);
+    else if(act.time === "7 Jours") expiry.setDate(expiry.getDate() + 7);
+    else if(act.time === "30 Jours") expiry.setDate(expiry.getDate() + 30);
+
+    userData.balance -= act.stake;
+    act.status = "validé";
+    act.expiryDate = expiry.toISOString();
+
+    userData.history.push({date: new Date().toISOString(), type:'Action Validée', amount: -act.stake, desc: `Action ${act.name} active`});
+    userData.notifications.push({date: new Date().toISOString(), message: `Action ${act.name} validée ! Le décompte a commencé.`, type:'success'});
+
+    await updateDoc(doc(db,"users",uid), { 
+        balance: userData.balance, 
+        actions: userData.actions, 
+        history: userData.history,
+        notifications: userData.notifications
+    });
+    alert("Action validée et mise déduite !");
+    loadAdminTable();
+};
+
+window.adminPayGain = async (uid, idx) => {
+    let gain = parseInt(prompt("Montant du gain à payer au client :"));
+    if(isNaN(gain) || gain <= 0) return;
+
+    const snap = await getDoc(doc(db,"users",uid));
+    let userData = snap.data();
+    let act = userData.actions[idx];
+
+    userData.balance += gain;
+    userData.totalGenerated = (userData.totalGenerated || 0) + gain;
+    
+    userData.history.push({date: new Date().toISOString(), type:'Gain Action', amount: gain, desc: `Gain pour ${act.name}`});
+    userData.notifications.push({date: new Date().toISOString(), message: `Félicitations ! Vous avez reçu un gain de ${gain} FCFA sur votre action ${act.name}.`, type:'success'});
+
+    await updateDoc(doc(db,"users",uid), { 
+        balance: userData.balance, 
+        totalGenerated: userData.totalGenerated,
+        history: userData.history,
+        notifications: userData.notifications
+    });
+    alert("Gain payé avec succès !");
+    loadAdminTable();
+};
+
+window.addDepositPrompt=async(uid)=>{
+  let amount=parseInt(prompt("Montant du dépôt :"));
+  if(isNaN(amount)||amount<=0) return;
+  const snap=await getDoc(doc(db,"users",uid));
+  let ud = snap.data();
+  await updateDoc(doc(db,"users",uid),{
+    balance: ud.balance + amount,
+    history: arrayUnion({date:new Date().toISOString(), type:'Dépôt', amount:amount, desc:'Admin'})
+  });
+  loadAdminTable();
+};
+
+window.requestWithdrawal=async()=>{
+  const amt=parseInt(document.getElementById("withdrawAmount").value);
+  if(isNaN(amt)||amt<=0) return;
+  await updateDoc(doc(db,"users",currentUser.uid),{
+    withdrawRequests: arrayUnion({date:new Date(), status:"en attente", amount:amt})
+  });
+  alert("Demande envoyée !");
+};
+
+// Tombola simple logic
+window.playTombola=async()=>{
+  const bet = parseInt(document.getElementById("tombolaBet").value);
+  const snap=await getDoc(doc(db,"users",currentUser.uid));
+  let ud = snap.data();
+  if(bet > ud.balance) return alert("Solde insuffisant");
+  
+  let winNum = Math.floor(Math.random()*16);
+  let choice = parseInt(document.getElementById("tombolaNumber").value);
+  
+  if(choice === winNum) {
+      let gain = bet * 2;
+      await updateDoc(doc(db,"users",currentUser.uid), { balance: ud.balance + gain });
+      alert("GAGNÉ ! Gain: " + gain);
+  } else {
+      await updateDoc(doc(db,"users",currentUser.uid), { balance: ud.balance - bet });
+      alert("PERDU ! Le numéro était " + winNum);
+  }
+  location.reload();
+};
+
+</script>
+
+<footer style="text-align:center; padding:15px; background:#f0f6ff; color:#555; font-size:14px;">
+  © 2026 BRAINY WALLET (BW). Tous droits réservés.
+</footer>
+</body>
+</html>
