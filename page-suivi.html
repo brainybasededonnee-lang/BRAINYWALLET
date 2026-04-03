@@ -85,7 +85,7 @@
           <input id="cbm" placeholder="Volume" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-500 mb-1">Date de paiement</label>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Date de départ</label>
           <input id="paiement" placeholder="JJ/MM/AAAA" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
         </div>
         <div>
@@ -197,17 +197,17 @@ window.verifierCommande = async function () {
       <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">⚖️ Poids</b>${d.poids || "-"}</p>
       <p class="bg-slate-50 p-3 rounded-lg border border-slate-100 col-span-2"><b class="block text-slate-400 text-xs uppercase mb-1">📦 Produits</b>${d.produits || "-"}</p>
       <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📐 CBM</b>${d.cbm || "-"}</p>
-      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">💳 Départ en Chine</b>${d.paiement || "-"}</p>
+      <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📅 Départ en Chine</b>${d.paiement || "-"}</p>
       <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">📅 Arrivée à Lomé</b>${d.arrivee || "-"}</p>
       <p class="bg-slate-50 p-3 rounded-lg border border-slate-100"><b class="block text-slate-400 text-xs uppercase mb-1">🧾 Taxe</b>${d.taxe || "-"}</p>
     </div>
 
     <div class="bg-red-50 text-red-700 p-3 rounded-lg text-center border border-red-100">
-      <p class="text-sm"><b>💸 Dette restante :</b> ${d.dette || "0"} FCFA</p>
+      <p class="text-sm"><b> Dette restante :</b> ${d.dette || "0"} FCFA</p>
     </div>
 
     <div class="bg-blue-600 text-white p-4 rounded-xl text-center shadow-md">
-      <p class="text-xs text-blue-200 uppercase tracking-wider mb-1">📊 Statut actuel</p>
+      <p class="text-xs text-blue-200 uppercase tracking-wider mb-1"> Statut actuel</p>
       <p class="text-sm md:text-base font-semibold">${d.statut || "-"}</p>
     </div>
 
@@ -218,11 +218,11 @@ window.verifierCommande = async function () {
       <div class="flex items-center gap-3 ${statut.includes("chine") ? "text-green-600 font-medium" : "text-slate-400"}">
         <div class="w-4 h-4 rounded-full ${statut.includes("chine") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En préparation en Chine
       </div>
-      <div class="flex items-center gap-3 ${statut.includes("transit") ? "text-green-600 font-medium" : "text-slate-400"}">
-        <div class="w-4 h-4 rounded-full ${statut.includes("transit") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En transit maritime/aérien
+      <div class="flex items-center gap-3 ${statut.includes("transistion") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("transistion") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En transit maritime/aérien (de la Chine vers Lomé)
       </div>
-      <div class="flex items-center gap-3 ${statut.includes("lomé") || statut.includes("lome") ? "text-green-600 font-medium" : "text-slate-400"}">
-        <div class="w-4 h-4 rounded-full ${statut.includes("lomé") || statut.includes("lome") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Arrivé à Lomé (Dédouanement)
+      <div class="flex items-center gap-3 ${statut.includes("arriver au port") || statut.includes("lome") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("arriver au port") || statut.includes("lome") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Arrivé à Lomé (Dédouanement)
       </div>
       <div class="flex items-center gap-3 ${statut.includes("recuperer") ? "text-green-600 font-medium" : "text-slate-400"}">
         <div class="w-4 h-4 rounded-full ${statut.includes("recuperer") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Prêt à récupérer en agence
@@ -230,7 +230,7 @@ window.verifierCommande = async function () {
     </div>
 
     <div class="bg-green-50 text-green-800 p-4 rounded-xl text-center border border-green-200 shadow-sm mt-4">
-      <p class="text-sm text-green-600 uppercase mb-1">💰 Montant total payé</p>
+      <p class="text-sm text-green-600 uppercase mb-1"> Montant total payé</p>
       <p class="text-xl font-bold">${d.total || "0"} FCFA</p>
     </div>
 
