@@ -1,545 +1,303 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BRAINY WALLET (BW)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brainy Agency</title>
 
-<style>
-body{
-  font-family: Arial,sans-serif;
-  background:#f0f6ff;
-  margin:0;
-}
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-/* HEADER */
-header{
-  background:#007bff;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
-header img{
-  width:80px;
-  border-radius:50%;
-}
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-/* CONTAINER */
-.container{
-  width:90%;
-  max-width:700px;
-  margin:30px auto;
-  background:white;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);
-}
-.hidden{display:none;}
-h2{text-align:center;color:#007bff;}
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #0f172a; color: #e5e7eb; scroll-behavior: smooth; }
+    a { text-decoration: none; color: inherit; }
 
-input,button{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-button{
-  background:#007bff;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-.message{text-align:center;font-weight:bold;margin-top:10px;}
+    /* ===== HEADER ===== */
+    header {
+      height: 100vh;
+      background: linear-gradient(rgba(15,23,42,.8), rgba(15,23,42,.8)), url('source/hero.jpg') center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
 
-/* WALLET CARD */
-.wallet-card{
-  background:linear-gradient(135deg,#0a7a18,#0f9d2f);
-  color:white;
-  border-radius:18px;
-  padding:20px;
-}
-.wallet-header{
-  display:flex;
-  justify-content:space-between;
-  font-weight:bold;
-}
-.wallet-main{
-  margin:20px 0;
-}
-.amount{
-  font-size:28px;
-  font-weight:bold;
-}
-.label{
-  font-size:14px;
-  opacity:0.9;
-}
-.wallet-footer{
-  display:flex;
-  gap:10px;
-}
-.box{
-  flex:1;
-  background:rgba(255,255,255,0.15);
-  border-radius:12px;
-  padding:10px;
-  text-align:center;
-}
-.box-title{font-size:12px;}
-.box-amount{font-size:16px;font-weight:bold;margin-top:5px;}
+    header h1 { font-size: 3.2rem; font-weight: 700; }
+    header span { color: #38bdf8; }
+    header p { margin: 20px 0; font-size: 1.2rem; }
 
-/* Tombola */
-.tombola{
-  margin-top:20px;
-  text-align:center;
-}
-.tombola input, .tombola button{
-  width:auto;
-  margin:5px;
-  padding:8px;
-}
-#tombolaGrid{
-  display:grid;
-  grid-template-columns: repeat(4, 50px);
-  gap:8px;
-  justify-content:center;
-  margin-top:15px;
-}
-.tombolaCell{
-  width:50px;
-  height:50px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#e0e0e0;
-  border-radius:8px;
-  font-weight:bold;
-  transition: background 0.2s;
-}
-.tombolaCell.active{
-  background: #ffcc00;
-}
-.tombolaCell.winner{
-  background: #28a745;
-  color:white;
-}
+    .btn {
+      padding: 12px 28px;
+      background: #38bdf8;
+      color: #0f172a;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #38bdf8; }
 
-/* ADMIN DASHBOARD */
-.admin-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.admin-stats{
-  display:flex;
-  justify-content:space-around;
-  margin-top:15px;
-  padding:10px;
-  background:#f1f1f1;
-  border-radius:8px;
-  font-weight:bold;
-}
-.admin-table{
-  width:100%;
-  border-collapse: collapse;
-  margin-top:15px;
-}
-.admin-table th, .admin-table td{
-  border:1px solid #ccc;
-  padding:8px;
-  text-align:center;
-}
-.admin-table th{
-  background:#007bff;
-  color:white;
-}
-.admin-action button{
-  padding:5px 10px;
-  margin:2px 0;
-  font-size:12px;
-  color:white;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-}
-</style>
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(15,23,42,.9);
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 40px;
+      z-index: 1000;
+    }
+
+    nav ul { display: flex; gap: 25px; }
+    nav ul li { list-style: none; }
+    nav ul li a:hover { color: #38bdf8; }
+
+    /* ===== SECTIONS ===== */
+    section { padding: 80px 8%; }
+    h2 { font-size: 2.2rem; margin-bottom: 40px; text-align: center; }
+    h2 span { color: #38bdf8; }
+
+    /* ===== ABOUT ===== */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .about img { width: 100%; border-radius: 20px; animation: slideLeft 1.5s; }
+    .about div { animation: slideRight 1.5s; }
+
+    /* ===== SERVICES ===== */
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    .service-box {
+      background: #020617;
+      padding: 30px;
+      border-radius: 20px;
+      transition: 0.4s;
+    }
+    .service-box i { font-size: 2.5rem; color: #38bdf8; }
+    .service-box h3 { margin: 15px 0; }
+    .service-box:hover { transform: translateY(-15px); box-shadow: 0 0 30px rgba(56,189,248,.4); }
+
+    /* ===== PORTFOLIO ===== */
+    .portfolio {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    .project {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+    .project img { width: 100%; transition: 0.5s; }
+    .project:hover img { transform: scale(1.1); }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,23,42,.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: 0.5s;
+    }
+    .project:hover .overlay { opacity: 1; }
+
+    /* ===== CONTACT ===== */
+    .contact {
+      max-width: 600px;
+      margin: auto;
+      display: grid;
+      gap: 20px;
+    }
+    input, textarea {
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      background: #020617;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideLeft { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideRight { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media(max-width: 900px){ .about { grid-template-columns: 1fr; } header h1{font-size:2.4rem;} }
+  </style>
 </head>
+<body>
+
+<nav>
+  <h3>Brainy<span style="color:#38bdf8">Agency</span></h3>
+  <ul>
+    <li><a href="#home">Accueil</a></li>
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header id="home">
 
 <body>
 
-<header>
-  <img src="https://z-p3-scontent.flfw1-1.fna.fbcdn.net/v/t39.30808-1/427968173_726031886292662_4183086831892259137_n.jpg?stp=c235.145.937.937a_dst-jpg_s200x200_tt6&_nc_cat=108&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=glMYxXNJl1MQ7kNvwFjLxXP&_nc_oc=Admkx19exvbiHyn2_PYwAe5JZSK1mf8hemi7f0BsuiNCEVnl8l-7_JTzd_xVs9NLvGE&_nc_zt=24&_nc_ht=z-p3-scontent.flfw1-1.fna&_nc_gid=b8QR9KFxXN-FtSA4SzP59g&oh=00_AfqeOAGjX6_RXgu2ZY6UEd_8o9Chc2PMUajuHAJEXNbU1Q&oe=696BE947">
-  <h1>BRAINY WALLET (BW)</h1>
+  <div class="container">
+  <button class="btn" onclick="window.location.href='brainy-wallet.html'">BRAINY WALLET (BW)</button>
+  <button class="btn" onclick="window.location.href='page-suivi.html'">SUIVRE MA COMMANDE</button>
+  <button class="btn" onclick="window.location.href='https://ntbffiza.mychariow.shop'">FORMATIONS</button>
+</div>
+</body>
+
+  <h1>Nous créons <span>la technologie</span> du futur</h1>
+  <p>Électronique • Informatique • Business • Formation • Automatisation</p>
+  <a href="#contact" class="btn">Travailler avec nous</a>
 </header>
 
-<!-- INSCRIPTION CLIENT -->
-<div class="container" id="register-section">
-<h2>Inscription</h2>
-<input id="fullName" placeholder="Nom complet">
-<input id="phone" placeholder="Téléphone">
-<input id="email" placeholder="Email">
-<input id="address" placeholder="Adresse">
-<input id="paymentNumber" placeholder="Numéro Flooz ou Mixx">
-<input id="inviteCode" placeholder="Code d’invitation">
-<input id="password" type="password" placeholder="Mot de passe">
-<button onclick="register()">S’inscrire</button>
-<p class="message" id="register-message"></p>
-<p style="text-align:center">
-Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
-</p>
-</div>
-
-<!-- LOGIN -->
-<div class="container hidden" id="login-section">
-<h2>Connexion</h2>
-<input id="login-email" placeholder="Email">
-<input id="login-password" type="password" placeholder="Mot de passe">
-<button onclick="login()">Se connecter</button>
-<p class="message" id="login-message"></p>
-</div>
-
-<!-- DASHBOARD CLIENT -->
-<div class="container hidden" id="dashboard-section">
-
-<div class="wallet-card">
-  <div class="wallet-header">
-    <span id="clientName">Nom Client</span>
-    <span>👁</span>
-  </div>
-
-  <div class="wallet-main">
-    <div class="amount" id="balanceAmount">0 FCFA</div>
-    <div class="label">Solde disponible</div>
-  </div>
-
-  <div class="wallet-footer">
-    <div class="box">
-      <div class="box-title">Solde total généré</div>
-      <div class="box-amount" id="totalGenerated">0 FCFA</div>
-    </div>
-    <div class="box">
-      <div class="box-title">Payé</div>
-      <div class="box-amount" id="totalWithdrawn">0 FCFA</div>
+<section id="about">
+  <h2>À <span>propos</span></h2>
+  <div class="about">
+    <img src="source/brainy.png" alt="about">
+    <div>
+      <p><strong>Brainy Agency</strong> est une entreprise spécialisée en électronique, informatique et Business. Nous concevons, formons et innovons pour préparer l'Afrique à la technologie de demain.</p>
     </div>
   </div>
+</section>
+
+<section id="services">
+  <h2>Nos <span>Services</span></h2>
+  <div class="services">
+    <div class="service-box"><i class="fas fa-microchip"></i><h3>Électronique</h3><p>Conception et réalisation de circuits électroniques, automatismes et systèmes embarqués, développement de prototypes, solutions de maison intelligente et sécurisée, Systèmes d’alarme et contrôle</p></div>
+    <div class="service-box"><i class="fas fa-graduation-cap"></i><h3>Formations</h3><p>Programmation Arduino, Informatique, IA, Sécrétariat bureautique, Internet, Réseaux informatique.</p></div>
+    <div class="service-box"><i class="fas fa-globe"></i><h3>Digital</h3><p>Création de sites web modernes (site web portfolio), design d’affiches professionnelles, Recus, Carnets, Cartes, </p></div>
+	<div class="service-box"><i class="fas fa-robot"></i><h3>Maintenance</h3><p>Installation de réseaux WiFi, systèmes de caméras de surveillance, installation de paraboles et réparation d’appareils électroniques</p></div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <h2>Nos <span>Projets</span></h2>
+  <div class="portfolio">
+    <div class="project"><img src="source/projet1.jpg"><div class="overlay">Projet Arduino</div></div>
+    <div class="project"><img src="source/projet2.jpg"><div class="overlay">Jeu électronique</div></div>
+    <div class="project"><img src="source/commande.jpg"><div class="overlay">Exportation depuis la Chine</div></div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Nous <span>Contacter</span></h2>
+  <form class="contact">
+    <input type="text" placeholder="Nom" required>
+    <input type="email" placeholder="Email" required>
+    <textarea rows="5" placeholder="Message"></textarea>
+    <button class="btn">Envoyer</button>
+  </form>
+</section>
+
+
+<div style="text-align: center;">
+  <p>Sécrétariat : +228 93 36 72 62 (WhatsApp)</p>
+  <p>contactetsbrainy@gmail.com</p>
 </div>
-
-<br>
-<input type="number" id="withdrawAmount" placeholder="Montant retrait à demander">
-<button onclick="requestWithdrawal()">Demande de retrait</button>
-<p class="message" id="withdrawMessage"></p>
-
-<!-- Jeu Tombola -->
-<div class="tombola">
-  <h3>Jeu de Tombola</h3>
-  <input type="number" id="tombolaNumber" placeholder="Choisir un numéro 0-15" min="0" max="15">
-  <input type="number" id="tombolaBet" placeholder="Votre mise (100-10000 FCFA)" min="100" max="10000">
-  <button onclick="playTombola()">Lancer le jeu</button>
-  <div id="tombolaGrid"></div>
-  <div id="result"></div>
-</div>
-
-<br>
-<button onclick="logout()">Se déconnecter</button>
-</div>
-
-<!-- DASHBOARD ADMIN -->
-<div class="container hidden" id="admin-section">
-<h2>Dashboard Admin</h2>
-
-<!-- STATS -->
-<div class="admin-stats">
-  <div>Total Clients: <span id="totalClients">0</span></div>
-  <div>Solde Total: <span id="totalBalance">0 FCFA</span></div>
-  <div>Demandes Retrait En Attente: <span id="pendingRequests">0</span></div>
-</div>
-
-<input type="text" id="searchUser" placeholder="Rechercher par nom ou email..." oninput="loadAdminTable()">
-
-<div style="overflow-x:auto;">
-<table class="admin-table">
-<thead>
-<tr>
-<th>Nom</th>
-<th>Email</th>
-<th>Solde</th>
-<th>Demandes Retrait</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="adminTableBody"></tbody>
-</table>
-</div>
-
-<button onclick="logout()" style="margin-top:10px;background:red;">Se déconnecter</button>
-</div>
-
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut } 
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc,updateDoc,collection,getDocs,arrayUnion } 
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyCVAmEneDsZ-f2HjpDx_OElvjDjPu1D2LI",
-  authDomain: "brainy-wallet.firebaseapp.com",
-  projectId: "brainy-wallet",
-  storageBucket: "brainy-wallet.firebasestorage.app",
-  messagingSenderId: "554152129336",
-  appId: "1:554152129336:web:997fe6b439d6ccac0707cd"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-let currentUser=null;
-
-// Afficher grille tombola
-const tombolaGrid=document.getElementById("tombolaGrid");
-for(let i=0;i<16;i++){
-  const cell=document.createElement("div");
-  cell.className="tombolaCell";
-  cell.textContent=i;
-  tombolaGrid.appendChild(cell);
-}
-
-// Login
-window.showLogin=()=>{
-  document.getElementById("register-section").classList.add("hidden");
-  document.getElementById("login-section").classList.remove("hidden");
-};
-
-// Inscription client
-window.register=async()=>{
-const msg=document.getElementById("register-message");
-msg.textContent="Création du compte...";
-msg.style.color="blue";
-try{
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-const userCred=await createUserWithEmailAndPassword(auth,email,password);
-
-await setDoc(doc(db,"users",userCred.user.uid),{
-fullName:fullName.value,
-phone:phone.value,
-email:email,
-address:address.value,
-paymentNumber:paymentNumber.value,
-inviteCode:inviteCode.value,
-balance:0,
-totalGenerated:0,
-totalWithdrawn:0,
-withdrawRequests:[],
-createdAt:new Date()
-});
-
-msg.textContent="Compte créé avec succès ✔";
-msg.style.color="green";
-showLogin();
-}catch(e){
-msg.textContent=e.message;
-msg.style.color="red";
-}
-};
-
-// Connexion automatique détecte type
-window.login=async()=>{
-const msg=document.getElementById("login-message");
-const email=document.getElementById("login-email").value;
-const password=document.getElementById("login-password").value;
-
-// Admin automatique
-if(email==="mawoukobrainy@gmail.com" && password==="963689"){
-  document.getElementById("login-section").classList.add("hidden");
-  document.getElementById("admin-section").classList.remove("hidden");
-  loadAdminTable();
-  return;
-}
-
-// Login client
-try{
-const userCred=await signInWithEmailAndPassword(auth,email,password);
-const snap=await getDoc(doc(db,"users",userCred.user.uid));
-currentUser = userCred.user;
-const user=snap.data();
-
-document.getElementById("login-section").classList.add("hidden");
-document.getElementById("dashboard-section").classList.remove("hidden");
-
-clientName.textContent=user.fullName;
-balanceAmount.textContent=user.balance+" FCFA";
-totalGenerated.textContent=(user.totalGenerated||0)+" FCFA";
-totalWithdrawn.textContent=(user.totalWithdrawn||0)+" FCFA";
-
-}catch(e){
-msg.textContent=e.message;
-msg.style.color="red";
-}
-};
-
-// Logout
-window.logout=()=>{
-location.reload();
-};
-
-// Demande retrait client avec montant
-window.requestWithdrawal=async()=>{
-if(!currentUser) return;
-const msg=document.getElementById("withdrawMessage");
-const amount=parseInt(document.getElementById("withdrawAmount").value);
-if(isNaN(amount)||amount<=0){
-  msg.textContent="Entrez un montant valide";
-  return;
-}
-
-try{
-await updateDoc(doc(db,"users",currentUser.uid),{
-withdrawRequests: arrayUnion({date:new Date(), status:"en attente", amount:amount})
-});
-msg.textContent="Demande envoyée à l'admin ✔";
-msg.style.color="green";
-}catch(e){
-msg.textContent=e.message;
-msg.style.color="red";
-}
-};
-
-// Tombola
-window.playTombola=async()=>{
-if(!currentUser) return;
-const chosenNumber=parseInt(document.getElementById("tombolaNumber").value);
-const betAmount=parseInt(document.getElementById("tombolaBet").value);
-const resultDiv=document.getElementById("result");
-
-if(isNaN(chosenNumber) || chosenNumber<0 || chosenNumber>15){
-resultDiv.textContent="Choisissez un numéro valide entre 0 et 15";
-return;
-}
-if(isNaN(betAmount) || betAmount<100 || betAmount>10000){
-resultDiv.textContent="Mise invalide (100-10000 FCFA)";
-return;
-}
-
-// Récupérer le solde actuel
-const snap=await getDoc(doc(db,"users",currentUser.uid));
-let userData = snap.data();
-if(betAmount>userData.balance){
-resultDiv.textContent="Solde insuffisant pour cette mise";
-return;
-}
-
-// Numéro gagnant
-const winningNumber=Math.floor(Math.random()*16);
-const cells=document.querySelectorAll(".tombolaCell");
-let iterations=0;
-const totalIterations=20;
-
-const interval=setInterval(()=>{
-  cells.forEach(cell=>cell.classList.remove("active","winner"));
-  const randomIndex=Math.floor(Math.random()*16);
-  cells[randomIndex].classList.add("active");
-  iterations++;
-  if(iterations>=totalIterations){
-    clearInterval(interval);
-    cells.forEach(cell=>cell.classList.remove("active"));
-    cells[winningNumber].classList.add("winner");
-    if(chosenNumber===winningNumber){
-      const gain=Math.floor(betAmount/2);
-      userData.balance += gain;
-      resultDiv.textContent=`Félicitations ! Numéro: ${winningNumber}. Vous gagnez ${gain} FCFA`;
-    } else {
-      userData.balance -= betAmount;
-      resultDiv.textContent=`Perdu ! Numéro: ${winningNumber}. ${betAmount} FCFA retirés de votre compte`;
-    }
-    updateDoc(doc(db,"users",currentUser.uid),{balance:userData.balance});
-    balanceAmount.textContent=userData.balance+" FCFA";
-  }
-},150);
-};
-
-// ADMIN FUNCTIONS
-async function loadAdminTable(){
-  const tbody=document.getElementById("adminTableBody");
-  tbody.innerHTML="";
-  const querySnapshot = await getDocs(collection(db,"users"));
-  const searchVal=document.getElementById("searchUser").value.toLowerCase();
-
-  let totalClients=0, totalBalance=0, pending=0;
-
-  querySnapshot.forEach(docSnap=>{
-    const user=docSnap.data();
-    if(searchVal && !user.fullName.toLowerCase().includes(searchVal) && !user.email.toLowerCase().includes(searchVal)){
-      return;
-    }
-
-    totalClients++;
-    totalBalance += user.balance || 0;
-    pending += user.withdrawRequests.filter(r=>r.status==="en attente").length;
-
-    const tr=document.createElement("tr");
-
-    const requestsHTML=user.withdrawRequests.map((r,i)=>{
-      let color=r.status==="validé"?"green":r.status==="refusé"?"red":"orange";
-      return `<span style="color:${color};">[${i+1}] ${r.status} - ${r.amount||0} FCFA</span>`;
-    }).join("<br>");
-
-    tr.innerHTML=`
-      <td>${user.fullName}</td>
-      <td>${user.email}</td>
-      <td>${user.balance}</td>
-      <td>${requestsHTML}</td>
-      <td class="admin-action">
-        <button onclick='validateWithdrawal("${docSnap.id}",0)' style="background:green;">Valider Retrait</button>
-        <button onclick='validateWithdrawal("${docSnap.id}",1)' style="background:red;">Refuser Retrait</button>
-        <button onclick='addDepositPrompt("${docSnap.id}")' style="background:blue;">Ajouter Dépôt</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById("totalClients").textContent = totalClients;
-  document.getElementById("totalBalance").textContent = totalBalance + " FCFA";
-  document.getElementById("pendingRequests").textContent = pending;
-}
-
-window.validateWithdrawal=async(uid,type)=>{
-  const snap=await getDoc(doc(db,"users",uid));
-  let userData = snap.data();
-  if(userData.withdrawRequests.length===0) return alert("Pas de demande");
-  let lastReq=userData.withdrawRequests[userData.withdrawRequests.length-1];
-  if(lastReq.status!=="en attente") return alert("Déjà traité");
-  lastReq.status=(type===0)?"validé":"refusé";
-  if(type===0){
-    userData.balance -= lastReq.amount || 0;
-  }
-  await updateDoc(doc(db,"users",uid),{
-    withdrawRequests:userData.withdrawRequests,
-    balance:userData.balance
-  });
-  alert("Action effectuée ✔");
-  loadAdminTable();
-}
-
-window.addDepositPrompt=async(uid)=>{
-  let amount=parseInt(prompt("Montant à ajouter au compte:"));
-  if(isNaN(amount)||amount<=0) return alert("Montant invalide");
-  const snap=await getDoc(doc(db,"users",uid));
-  let userData = snap.data();
-  userData.balance += amount;
-  await updateDoc(doc(db,"users",uid),{balance:userData.balance});
-  alert(`Dépôt de ${amount} FCFA ajouté ✔`);
-  loadAdminTable();
-}
-</script>
-<footer style="text-align:center; padding:15px; background:#f0f6ff; color:#555; font-size:14px;">
-  © <script>document.write(new Date().getFullYear())</script> BRAINY WALLET (BW). Tous droits réservés.
+ 
+<footer>
+  <p>© 2026 Brainy Agency – Technologie & Innovation</p>
 </footer>
+
+
+<!-- ===== LOADER ===== -->
+<div id="loader" style="position:fixed;inset:0;background:#020617;display:flex;align-items:center;justify-content:center;z-index:2000;">
+  <h2 style="color:#38bdf8;animation:pulse 1.2s infinite;">Brainy Agency</h2>
+</div>
+
+<script>
+// ===== PAGE LOADER =====
+window.addEventListener('load', () => {
+  const loader = document.getElementById('loader');
+  setTimeout(() => loader.style.display = 'none', 1200);
+});
+
+// ===== SCROLL REVEAL =====
+const revealElements = document.querySelectorAll('section, .service-box, .project');
+const revealOnScroll = () => {
+  const trigger = window.innerHeight * 0.85;
+  revealElements.forEach(el => {
+    const top = el.getBoundingClientRect().top;
+    if (top < trigger) {
+      el.style.opacity = 1;
+      el.style.transform = 'translateY(0)';
+    }
+  });
+};
+
+revealElements.forEach(el => {
+  el.style.opacity = 0;
+  el.style.transform = 'translateY(60px)';
+  el.style.transition = '1s ease';
+});
+
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+// ===== COUNTERS =====
+const counters = document.createElement('section');
+counters.innerHTML = `
+<h2>Nos <span>Statistiques</span></h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;text-align:center;">
+  <div><h1 data-count="50">0</h1><p>Projets réalisés</p></div>
+  <div><h1 data-count="45">0</h1><p>Apprenants formés</p></div>
+  <div><h1 data-count="10">0</h1><p>Domaines tech</p></div>
+</div>`;
+
+document.querySelector('#services').after(counters);
+
+const animateCounters = () => {
+  const nums = document.querySelectorAll('[data-count]');
+  nums.forEach(num => {
+    const target = +num.dataset.count;
+    const update = () => {
+      const current = +num.innerText;
+      const increment = Math.ceil(target / 100);
+      if (current < target) {
+        num.innerText = current + increment;
+        setTimeout(update, 30);
+      } else {
+        num.innerText = target;
+      }
+    };
+    update();
+  });
+};
+
+let counterPlayed = false;
+window.addEventListener('scroll', () => {
+  const pos = counters.getBoundingClientRect().top;
+  if (pos < window.innerHeight && !counterPlayed) {
+    animateCounters();
+    counterPlayed = true;
+  }
+});
+</script>
+
+<style>
+@keyframes pulse { 0%{opacity:.4;} 50%{opacity:1;} 100%{opacity:.4;} }
+</style>
+
 </body>
 </html>
