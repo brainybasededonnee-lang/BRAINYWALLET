@@ -310,7 +310,6 @@ button{
   </div>
 </div>
 
-<!-- POPUP NOTIFICATIONS -->
 <div id="notifPopup" class="popup-overlay" style="align-items:flex-start; padding-top:40px;">
   <div class="popup-content" style="max-width:420px; width:92%; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
     <div style="background:#e0a800; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:12px 12px 0 0;">
@@ -321,7 +320,6 @@ button{
   </div>
 </div>
 
-<!-- POPUP HISTORIQUE -->
 <div id="histPopup" class="popup-overlay" style="align-items:flex-start; padding-top:40px;">
   <div class="popup-content" style="max-width:460px; width:92%; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
     <div style="background:#17a2b8; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; border-radius:12px 12px 0 0;">
@@ -335,13 +333,17 @@ button{
 
 <div class="container" id="register-section">
 <h2>Inscription</h2>
-<input id="fullName" placeholder="Nom complet">
+<div style="display: flex; gap: 10px;">
+  <input id="lastName" placeholder="Nom" style="flex: 1;">
+  <input id="firstName" placeholder="Prénom" style="flex: 1;">
+</div>
 <input id="phone" placeholder="Téléphone">
-<input id="email" placeholder="Email">
+<input id="email" type="email" placeholder="Email">
 <input id="address" placeholder="Adresse">
 <input id="paymentNumber" placeholder="Numéro Flooz ou Mixx">
 <input id="inviteCode" placeholder="Code d'invitation">
 <input id="password" type="password" placeholder="Mot de passe">
+<input id="confirmPassword" type="password" placeholder="Confirmer le mot de passe">
 <button onclick="register()">S'inscrire</button>
 <p class="message" id="register-message"></p>
 <p style="text-align:center">
@@ -374,7 +376,6 @@ Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
     </div>
   </div>
 
-  <!-- BLOC AFFILIATION MISE À JOUR (3 COLONNES) -->
   <div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; margin-top: 15px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
     <div>
       <div style="font-size:11px; opacity:0.9;">Code Affilié</div>
@@ -389,8 +390,6 @@ Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
       <strong id="myAffiliatesCountDisplay" style="font-size:16px; color:#fff;">0</strong>
     </div>
   </div>
-  <!-- FIN BLOC AFFILIATION -->
-
   <div class="wallet-main">
     <div class="amount" id="balanceAmount">0 FCFA</div>
     <div class="label">Solde disponible</div>
@@ -454,7 +453,6 @@ Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
 <button onclick="logout()" style="background:#dc3545;">Se déconnecter</button>
 </div>
 
-<!-- SECTION ADMIN -->
 <div class="container hidden" id="admin-section" style="max-width: 960px;">
 <h2>Dashboard Admin</h2>
 
@@ -644,13 +642,37 @@ window.register=async()=>{
     const msg=document.getElementById("register-message");
     msg.textContent="Création...";
     try{
-        const email=document.getElementById("email").value;
+        const email=document.getElementById("email").value.trim();
         const password=document.getElementById("password").value;
+        const confirmPassword=document.getElementById("confirmPassword").value;
         const inviteCodeInput = document.getElementById("inviteCode").value.trim();
-        const fullName = document.getElementById("fullName").value;
         const phone = document.getElementById("phone").value;
         
-        if(!email || !password) throw {code: "auth/missing-email"};
+        const firstName = document.getElementById("firstName").value.trim();
+        const lastName = document.getElementById("lastName").value.trim();
+        
+        if (!firstName || !lastName) {
+            msg.textContent="";
+            return showPopup("Erreur", "Veuillez renseigner votre nom et votre prénom.", true);
+        }
+
+        if(!email || !password) {
+            msg.textContent="";
+            throw {code: "auth/missing-email"};
+        }
+
+        if (password !== confirmPassword) {
+            msg.textContent="";
+            return showPopup("Erreur", "Les mots de passe ne correspondent pas.", true);
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if(!emailRegex.test(email)) {
+            msg.textContent="";
+            return showPopup("Erreur d'email", "Veuillez entrer une adresse e-mail valide et existante (ex: nom@gmail.com).", true);
+        }
+
+        const fullName = `${firstName} ${lastName}`;
 
         let baseLetters = fullName.replace(/[^a-zA-Z]/g, '').substring(0, 2).toUpperCase();
         if(baseLetters.length < 2) baseLetters = "BW";
@@ -676,7 +698,7 @@ window.register=async()=>{
 
         const userCred=await createUserWithEmailAndPassword(auth,email,password);
         await setDoc(doc(db,"users",userCred.user.uid),{
-            fullName: fullName,
+            fullName: fullName, 
             phone: phone,
             email:email,
             address:document.getElementById("address").value,
@@ -685,7 +707,7 @@ window.register=async()=>{
             myAffiliateCode: finalCode,
             referredBy: inviteCodeInput,
             affiliatesCount: 0,
-            totalAffiliateBonus: 0, // Initialisation des gains parrainage
+            totalAffiliateBonus: 0, 
             hasMadeFirstDeposit: false,
             balance:0,
             totalGenerated:0,
@@ -718,41 +740,51 @@ window.register=async()=>{
     }
 };
 
-window.login=async()=>{
-    const msg=document.getElementById("login-message");
-    const email=document.getElementById("login-email").value;
-    const password=document.getElementById("login-password").value;
+window.login = async () => {
+    const msg = document.getElementById("login-message");
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
 
-    if(email==="mawoukobrainy@gmail.com" && password==="963689"){
-        document.getElementById("login-section").classList.add("hidden");
-        document.getElementById("admin-section").classList.remove("hidden");
-        loadAdminTable();
-        return;
+    const now = new Date().getTime();
+    let lockoutUntil = localStorage.getItem('bw_lockout_until');
+    if (lockoutUntil && now < parseInt(lockoutUntil)) {
+        let remainingMins = Math.ceil((parseInt(lockoutUntil) - now) / 60000);
+        return showPopup("Accès bloqué", `Trop de tentatives échouées. Veuillez réessayer dans ${remainingMins} minute(s).`, true);
     }
 
-    msg.textContent="Connexion...";
-    try{
-        if(!email || !password) throw {code: "auth/missing-email"};
+    msg.textContent = "Connexion...";
+    try {
+        if (!email || !password) throw {code: "auth/missing-email"};
 
-        const userCred=await signInWithEmailAndPassword(auth,email,password);
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
         currentUser = userCred.user;
-        const snap=await getDoc(doc(db,"users",currentUser.uid));
-        const user=snap.data();
+        const snap = await getDoc(doc(db, "users", currentUser.uid));
+        const user = snap.data();
 
-        msg.textContent="";
+        localStorage.removeItem('bw_failed_attempts');
+        localStorage.removeItem('bw_lockout_until');
+
+        msg.textContent = "";
+
+        if (user && user.isAdmin === true) {
+            document.getElementById("login-section").classList.add("hidden");
+            document.getElementById("admin-section").classList.remove("hidden");
+            loadAdminTable();
+            return;
+        }
+
         document.getElementById("login-section").classList.add("hidden");
         document.getElementById("dashboard-section").classList.remove("hidden");
 
-        document.getElementById("clientName").textContent=user.fullName;
+        document.getElementById("clientName").textContent = user.fullName;
         
-        // AFFICHAGE DES DONNÉES D'AFFILIATION
         document.getElementById("myAffiliateCodeDisplay").textContent = user.myAffiliateCode || "---";
         document.getElementById("myAffiliatesCountDisplay").textContent = user.affiliatesCount || 0;
         document.getElementById("myAffiliateBonusDisplay").textContent = (user.totalAffiliateBonus || 0) + " FCFA";
 
-        document.getElementById("balanceAmount").textContent=user.balance+" FCFA";
-        document.getElementById("totalGenerated").textContent=(user.totalGenerated||0)+" FCFA";
-        document.getElementById("totalWithdrawn").textContent=(user.totalWithdrawn||0)+" FCFA";
+        document.getElementById("balanceAmount").textContent = user.balance + " FCFA";
+        document.getElementById("totalGenerated").textContent = (user.totalGenerated || 0) + " FCFA";
+        document.getElementById("totalWithdrawn").textContent = (user.totalWithdrawn || 0) + " FCFA";
 
         renderClientActions(user.actions || []);
         renderClientHistory(user.history || []);
@@ -761,9 +793,24 @@ window.login=async()=>{
         window._clientNotifications = user.notifications || [];
         window._clientHistory = user.history || [];
         window.updateBadges();
-    }catch(e){ 
-        msg.textContent="";
-        showPopup("Erreur de connexion", translateFirebaseError(e), true); 
+
+    } catch(e) { 
+        msg.textContent = "";
+
+        if (e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+            let attempts = parseInt(localStorage.getItem('bw_failed_attempts') || '0') + 1;
+            localStorage.setItem('bw_failed_attempts', attempts);
+            
+            if (attempts >= 5) {
+                localStorage.setItem('bw_lockout_until', now + (5 * 60 * 1000)); 
+                showPopup("Accès bloqué", "5 tentatives échouées. Votre interface est bloquée pour 5 minutes.", true);
+            } else {
+                let remaining = 5 - attempts;
+                showPopup("Erreur", `Identifiants incorrects ou compte n'existe pas. Tentatives restantes : ${remaining}`, true);
+            }
+        } else {
+            showPopup("Erreur de connexion", translateFirebaseError(e), true); 
+        }
     }
 };
 
@@ -1070,7 +1117,9 @@ window.adminValidateAction = async (uid, idx) => {
 
     if(userData.balance < act.stake) return alert("Solde client insuffisant");
 
+    // L'HEURE EXACTE DE VALIDATION DE L'ADMIN EST PRISE ICI
     let expiry = new Date();
+    
     if(act.time === "7 Jours") expiry.setDate(expiry.getDate() + 7);
     else if(act.time === "16 Jours") expiry.setDate(expiry.getDate() + 16);
     else if(act.time === "30 Jours") expiry.setDate(expiry.getDate() + 30);
@@ -1082,6 +1131,10 @@ window.adminValidateAction = async (uid, idx) => {
     userData.balance -= act.stake;
     act.status = "validé";
     act.expiryDate = expiry.toISOString();
+    
+    // NOUVEAUTÉ : Tracabilité explicite de la date de validation par l'Admin.
+    act.validationDate = new Date().toISOString(); 
+    
     act.isPaid = false; 
 
     userData.history.push({date: new Date().toISOString(), type:'Action Validée', amount: -act.stake, desc: `Action ${act.name} active`});
@@ -1133,7 +1186,6 @@ window.addDepositPrompt=async(uid)=>{
   let finalDepositAmount = amount;
   let historyDesc = 'Admin';
   
-  // LOGIQUE DE BONUS PARRAINAGE (MISE À JOUR AVEC CUMUL)
   if (!ud.hasMadeFirstDeposit && ud.referredBy) {
       let q = query(collection(db, "users"), where("myAffiliateCode", "==", ud.referredBy));
       let querySnapshot = await getDocs(q);
@@ -1149,7 +1201,7 @@ window.addDepositPrompt=async(uid)=>{
               
               await updateDoc(doc(db, "users", sponsorDoc.id), {
                   balance: sponsorData.balance + bonus,
-                  totalAffiliateBonus: (sponsorData.totalAffiliateBonus || 0) + bonus, // CUMUL DU BONUS 3%
+                  totalAffiliateBonus: (sponsorData.totalAffiliateBonus || 0) + bonus,
                   history: arrayUnion({date:new Date().toISOString(), type:'Bonus Parrainage', amount:bonus, desc:`3% du 1er dépôt de ${ud.fullName}`}),
                   notifications: arrayUnion({date:new Date().toISOString(), message: `Félicitations ! Vous avez reçu ${bonus} FCFA (3%) suite au premier dépôt de votre affilié ${ud.fullName}.`, type:'success'})
               });
