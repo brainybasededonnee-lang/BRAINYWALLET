@@ -61,6 +61,11 @@
           <input id="adminCode" placeholder="Ex: CMD123" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
         </div>
         <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">Session / Saison</label>
+          <input id="session" list="sessionList" placeholder="Ex: Été 2026" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+          <datalist id="sessionList"></datalist>
+        </div>
+        <div>
           <label class="block text-xs font-medium text-slate-500 mb-1">Nom du client</label>
           <input id="nom" placeholder="Nom complet" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
         </div>
@@ -105,7 +110,7 @@
           <input id="total" placeholder="En FCFA" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
         </div>
         
-        <div class="md:col-span-2 lg:col-span-4">
+        <div class="md:col-span-2 lg:col-span-3">
           <label class="block text-xs font-medium text-slate-500 mb-1">Statut actuel</label>
           <select id="statut" class="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50 font-medium">
             <option value="Commande en préparation chez Brainy Agency">⏳ Commande en préparation chez Brainy Agency</option>
@@ -244,6 +249,7 @@ window.ajouterCommande = async function () {
   const old = snap.exists() ? snap.data() : {};
 
   await setDoc(doc(db, "commandes", code), {
+    session: $("session").value || "Général",
     nom: $("nom").value,
     tel: $("tel").value,
     livraison: $("livraison").value,
@@ -256,7 +262,8 @@ window.ajouterCommande = async function () {
     dette: $("dette").value,
     statut: $("statut").value,
     total: $("total").value,
-    visible: old.visible ?? true
+    visible: old.visible ?? true,
+    createdAt: old.createdAt || Date.now() // Conservé pour le tri chronologique
   });
 
   chargerTableau();
@@ -265,31 +272,76 @@ window.ajouterCommande = async function () {
 
 async function chargerTableau() {
   const snap = await getDocs(collection(db, "commandes"));
-  const table = $("tableBody");
-  table.innerHTML = "";
   allData = [];
+  const sessionsSet = new Set();
 
   snap.forEach(docSnap => {
     const d = docSnap.data();
     const code = docSnap.id;
-
     allData.push({ code, ...d });
-
-    table.innerHTML += `
-    <tr class="hover:bg-slate-50 transition group">
-      <td class="p-4 font-mono text-blue-600 font-medium">${code}</td>
-      <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
-      <td class="p-4 text-slate-600">${d.tel || "-"}</td>
-      <td class="p-4 text-right space-x-2">
-        <button onclick="modifier('${code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
-        <button onclick="partager('${code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
-        <button onclick="toggleVisible('${code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
-          ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
-        </button>
-      </td>
-    </tr>`;
+    sessionsSet.add(d.session || "Général");
   });
+
+  // Mise à jour des suggestions de sessions (datalist)
+  $("sessionList").innerHTML = Array.from(sessionsSet)
+    .map(s => `<option value="${s}">`).join("");
+
+  renderTable(allData);
 }
+
+function renderTable(dataToRender) {
+  const table = $("tableBody");
+  table.innerHTML = "";
+  
+  // Regrouper par session
+  const grouped = {};
+  dataToRender.forEach(d => {
+    const sessionName = d.session || "Général";
+    if (!grouped[sessionName]) grouped[sessionName] = [];
+    grouped[sessionName].push(d);
+  });
+
+  // Trier les éléments de chaque session par ordre chronologique décroissant
+  Object.keys(grouped).forEach(s => {
+    grouped[s].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  });
+
+  let html = "";
+  // Afficher chaque session et ses commandes
+  Object.keys(grouped).sort().forEach(sessionName => {
+    html += `
+      <tr class="bg-blue-50 border-y border-blue-100">
+        <td colspan="4" class="p-3 font-semibold text-blue-800 text-sm">📁 Session : ${sessionName}</td>
+      </tr>
+    `;
+    grouped[sessionName].forEach(d => {
+      html += `
+        <tr class="hover:bg-slate-50 transition group">
+          <td class="p-4 font-mono text-blue-600 font-medium">${d.code}</td>
+          <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
+          <td class="p-4 text-slate-600">${d.tel || "-"}</td>
+          <td class="p-4 text-right space-x-2">
+            <button onclick="modifier('${d.code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
+            <button onclick="partager('${d.code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
+            <button onclick="toggleVisible('${d.code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
+              ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
+            </button>
+          </td>
+        </tr>`;
+    });
+  });
+
+  table.innerHTML = html;
+}
+
+window.filtrerTableau = () => {
+  const val = $("searchInput").value.toLowerCase();
+  const filtered = allData.filter(d => 
+    (d.nom && d.nom.toLowerCase().includes(val)) || 
+    (d.code && d.code.toLowerCase().includes(val))
+  );
+  renderTable(filtered);
+};
 
 /* ================= ACTIONS ================= */
 window.modifier = async code => {
@@ -301,8 +353,29 @@ window.modifier = async code => {
 };
 
 window.partager = async code => {
-  const d = (await getDoc(doc(db, "commandes", code))).data();
-  window.open(`https://wa.me/${d.tel}?text=${encodeURIComponent("📦 Bonjour " + d.nom + ", voici le statut de votre commande : " + d.statut)}`);
+  const snap = await getDoc(doc(db, "commandes", code));
+  if (!snap.exists()) return;
+  const d = snap.data();
+
+  const message = `📦 *Bonjour ${d.nom || "Client"}*, voici les détails de votre commande :
+
+🔹 *Code de suivi* : ${code}
+📦 *Produits* : ${d.produits || "-"}
+⚖️ *Poids* : ${d.poids || "-"}
+📐 *CBM* : ${d.cbm || "-"}
+📍 *Lieu de livraison* : ${d.livraison || "-"}
+📅 *Date de départ* : ${d.paiement || "-"} | *Arrivée prévue/réelle* : ${d.arrivee || "-"}
+🧾 *Taxe* : ${d.taxe || "-"}
+💰 *Montant total payé* : ${d.total || "0"} FCFA
+🚨 *Reste à payer (Dette)* : ${d.dette || "0"} FCFA
+
+🔄 *Statut actuel de la commande* : 
+${d.statut || "-"}
+Voici le lien pour suivre votre commande: https://brainybasededonnee-lang.github.io/BRAINYWALLET/
+Merci de votre confiance !
+L'équipe Brainy Agency`;
+
+  window.open(`https://wa.me/${d.tel || ""}?text=${encodeURIComponent(message)}`);
 };
 
 window.toggleVisible = async (code, current) => {
@@ -324,27 +397,6 @@ window.showClient = () => {
   $("clientPage").classList.remove("hidden");
   $("code").value = "";
   $("resultat").innerHTML = "";
-};
-
-window.filtrerTableau = () => {
-  const val = $("searchInput").value.toLowerCase();
-  $("tableBody").innerHTML = allData
-    .filter(d => d.nom?.toLowerCase().includes(val) || d.code.toLowerCase().includes(val))
-    .map(d => `
-    <tr class="hover:bg-slate-50 transition group">
-      <td class="p-4 font-mono text-blue-600 font-medium">${d.code}</td>
-      <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
-      <td class="p-4 text-slate-600">${d.tel || "-"}</td>
-      <td class="p-4 text-right space-x-2">
-        <button onclick="modifier('${d.code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
-        <button onclick="partager('${d.code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
-        <button onclick="toggleVisible('${d.code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
-          ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
-        </button>
-      </td>
-    </tr>
-    `)
-    .join("");
 };
 </script>
 
