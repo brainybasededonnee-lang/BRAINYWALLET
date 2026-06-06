@@ -446,7 +446,7 @@ Déjà membre ? <a href="#" onclick="showLogin()">Se connecter</a>
   <select id="actionTime">
     <option value="7 Jours">7 Jours (5%) Limite de mise : 5 000 F </option>
     <option value="30 Jours">30 Jours (10%) Limite de mise : 15 000 F </option>
-    <option value="1 Mois">1 Mois (20%) Limite de mise : 25 000 F </option>
+    <option value="2 Mois">2 Mois (20%) Limite de mise : 25 000 F </option>
     <option value="4 Mois">4 Mois (25%) Limite de mise : 35 000 F </option>
     <option value="6 Mois">6 Mois (35%) Limite de mise : 40 000 F </option>
     <option value="7 Mois">7 Mois (40%) Limite de mise : 50 000 F </option>
@@ -844,12 +844,12 @@ window.buyAction = async () => {
   if (isNaN(stake) || stake <= 0) return showPopup("Attention", "Mise invalide", true);
 
   if(stake >= 5001 && timeStr === "7 Jours") return showPopup("Refusé", "Mise supérieure à 5000F : La durée de 7 jours n'est plus autorisée.", true);
-  if(stake >= 15000 && timeStr === "16 Jours") return showPopup("Refusé", "Mise supérieure à 15000F : La durée de 16 jours n'est plus autorisée.", true);
-  if(stake >= 25000 && timeStr === "30 Jours") return showPopup("Refusé", "Mise supérieure à 25000F : La durée de 30 jours n'est plus autorisée.", true);
-  if(stake >= 35000 && timeStr === "3 Mois") return showPopup("Refusé", "Mise supérieure à 35000F : La durée de 3 mois n'est plus autorisée.", true);
-  if(stake >= 40000 && timeStr === "5 Mois") return showPopup("Refusé", "Mise supérieure à 40000F : La durée de 5 mois n'est plus autorisée.", true);
-  if(stake >= 50000 && timeStr === "6 Mois") return showPopup("Refusé", "Mise supérieure à 35000F : La durée de 6 mois n'est plus autorisée.", true);
-  if(stake >= 55000 && timeStr === "8 Mois") return showPopup("Refusé", "Mise supérieure à 60000F : La durée de 8 mois n'est plus autorisée.", true);
+  if(stake >= 15000 && timeStr === "30 Jours") return showPopup("Refusé", "Mise supérieure à 15000F : La durée de 30 jours n'est plus autorisée.", true);
+  if(stake >= 25000 && timeStr === "2 Mois") return showPopup("Refusé", "Mise supérieure à 25000F : La durée de 2 mois n'est plus autorisée.", true);
+  if(stake >= 35000 && timeStr === "4 Mois") return showPopup("Refusé", "Mise supérieure à 35000F : La durée de 4 mois n'est plus autorisée.", true);
+  if(stake >= 40000 && timeStr === "6 Mois") return showPopup("Refusé", "Mise supérieure à 40000F : La durée de 6 mois n'est plus autorisée.", true);
+  if(stake >= 50000 && timeStr === "7 Mois") return showPopup("Refusé", "Mise supérieure à 35000F : La durée de 7 mois n'est plus autorisée.", true);
+  if(stake >= 55000 && timeStr === "9 Mois") return showPopup("Refusé", "Mise supérieure à 60000F : La durée de 9 mois n'est plus autorisée.", true);
 
   const snap = await getDoc(doc(db,"users",currentUser.uid));
   let userData = snap.data();
@@ -1150,12 +1150,12 @@ window.adminValidateAction = async (uid, idx) => {
     let expiry = new Date();
     
     if(act.time === "7 Jours") expiry.setDate(expiry.getDate() + 7);
-    else if(act.time === "16 Jours") expiry.setDate(expiry.getDate() + 16);
     else if(act.time === "30 Jours") expiry.setDate(expiry.getDate() + 30);
-    else if(act.time === "3 Mois") expiry.setMonth(expiry.getMonth() + 3);
-    else if(act.time === "5 Mois") expiry.setMonth(expiry.getMonth() + 5);
+    else if(act.time === "2 Mois") expiry.setMonth(expiry.getMonth() + 2);
+    else if(act.time === "4 Mois") expiry.setMonth(expiry.getMonth() + 4);
     else if(act.time === "6 Mois") expiry.setMonth(expiry.getMonth() + 6);
-    else if(act.time === "8 Mois") expiry.setMonth(expiry.getMonth() + 8);
+    else if(act.time === "7 Mois") expiry.setMonth(expiry.getMonth() + 7);
+    else if(act.time === "9 Mois") expiry.setMonth(expiry.getMonth() + 9);
 
     userData.balance -= act.stake;
     act.status = "validé";
