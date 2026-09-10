@@ -13,6 +13,7 @@
 
 <body class="bg-slate-50 text-slate-800 antialiased">
 
+<!-- ================= PAGE CLIENT ================= -->
 <div id="clientPage" class="flex items-center justify-center min-h-screen px-4">
   <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
     <div class="flex justify-center mb-4">
@@ -40,6 +41,7 @@
   </div>
 </div>
 
+<!-- ================= PAGE ADMIN ================= -->
 <div id="adminPage" class="hidden min-h-screen pb-12">
   <div class="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10">
     <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
@@ -52,13 +54,24 @@
 
   <div class="max-w-7xl mx-auto px-6 mt-8 space-y-8">
     
+    <!-- CARTE DE CRÉATION / MODIFICATION DE COMMANDE -->
     <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-      <h2 class="text-lg font-semibold mb-6 text-slate-700 border-b pb-2">Créer / Modifier une commande</h2>
+      <div class="flex justify-between items-center mb-6 border-b pb-2">
+        <h2 class="text-lg font-semibold text-slate-700">Créer / Modifier une commande</h2>
+        <button onclick="reinitialiserFormulaire()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1">
+          <span>➕</span> Nouvelle commande
+        </button>
+      </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label class="block text-xs font-medium text-slate-500 mb-1">Code Commande</label>
-          <input id="adminCode" placeholder="Ex: CMD123" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm">
+          <label class="block text-xs font-medium text-slate-500 mb-1">Code Commande (14 car.)</label>
+          <div class="flex gap-1">
+            <input id="adminCode" placeholder="Ex: BRAINY7K29P4X8" class="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm font-mono uppercase">
+            <button type="button" onclick="genererCodeUnique()" title="Générer un code unique 14 car." class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-2.5 rounded-lg text-xs font-semibold transition whitespace-nowrap">
+              ⚡ Auto
+            </button>
+          </div>
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-500 mb-1">Session / Saison</label>
@@ -115,6 +128,7 @@
           <select id="statut" class="w-full border border-slate-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50 font-medium">
             <option value="Commande en préparation chez Brainy Agency">⏳ Commande en préparation chez Brainy Agency</option>
             <option value="Commande en preparation en chine">🏭 Commande en préparation en Chine</option>
+            <option value="Commande arrivée chez le transitaire">📦 Commande arrivée chez le transitaire</option>
             <option value="Commande en transistion de chine vers lomé">🚢 Commande en transition de Chine vers Lomé</option>
             <option value="Commande arriver au port de lomé en cours de dedouement">🛃 Commande arrivée au port de Lomé (dédouanement)</option>
             <option value="Commande arriver chez Brainy Agency veiller passer pour recuperer">✅ Commande arrivée chez Brainy Agency, veuillez récupérer</option>
@@ -122,19 +136,45 @@
         </div>
       </div>
 
-      <div class="mt-6 flex justify-end">
-        <button onclick="ajouterCommande()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-lg transition shadow-md shadow-green-500/20">
+      <div class="mt-6 flex justify-end gap-3">
+        <button onclick="reinitialiserFormulaire()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-5 rounded-lg transition text-sm">
+          Réinitialiser
+        </button>
+        <button onclick="ajouterCommande()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-lg transition shadow-md shadow-green-500/20 text-sm">
           💾 Enregistrer / Modifier
         </button>
       </div>
     </div>
 
+    <!-- CARTE D'ACTIONS DE MASSE PAR SESSION -->
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+      <h2 class="text-lg font-semibold mb-4 text-slate-700 border-b pb-2 flex items-center gap-2">
+        <span>⚡</span> Actions par Session / Saison
+      </h2>
+      <div class="flex flex-wrap gap-3 items-center">
+        <button onclick="ouvrirModalChangerStatutMasse()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition shadow-md shadow-indigo-500/20 text-sm flex items-center gap-2">
+          <span>🔄</span> Modifier statut en masse
+        </button>
+        <button onclick="ouvrirModalWhatsappMasse()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg transition shadow-md shadow-emerald-500/20 text-sm flex items-center gap-2">
+          <span>💬</span> Envoi statut WhatsApp par Session
+        </button>
+      </div>
+    </div>
+
+    <!-- CARTE TABLEAU ET FILTRES DES COMMANDES -->
     <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
       <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h2 class="text-lg font-semibold text-slate-700">Liste des commandes</h2>
-        <div class="relative w-full md:w-72">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔎</span>
-          <input id="searchInput" onkeyup="filtrerTableau()" placeholder="Rechercher un client..." class="border border-slate-300 py-2 pl-10 pr-4 w-full rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50">
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div class="relative w-full sm:w-64">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔎</span>
+            <input id="searchInput" onkeyup="filtrerTableau()" placeholder="Rechercher un client..." class="border border-slate-300 py-2 pl-10 pr-4 w-full rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50">
+          </div>
+          <div class="w-full sm:w-64">
+            <select id="sessionFilter" onchange="filtrerTableau()" class="w-full border border-slate-300 py-2 px-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-sm bg-slate-50 font-medium">
+              <option value="ALL">Toutes les Sessions / Saisons</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -149,13 +189,132 @@
             </tr>
           </thead>
           <tbody id="tableBody" class="divide-y divide-slate-200 text-sm">
-            </tbody>
+          </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ================= MODAL MODIFICATION EN MASSE DU STATUT ================= -->
+<div id="modalMassStatut" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full p-6 space-y-5">
+    <div class="flex justify-between items-center border-b pb-3">
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <span>🔄</span> Modification du statut en masse
+      </h3>
+      <button onclick="fermerModalMassStatut()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+    </div>
+
+    <div>
+      <label class="block text-xs font-medium text-slate-500 mb-1">Sélectionner la Session / Saison</label>
+      <select id="massStatutSessionSelect" onchange="actualiserCompteMassStatut()" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+      </select>
+    </div>
+
+    <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl text-blue-800 text-xs font-medium flex items-center justify-between">
+      <span>Commandes concernées :</span>
+      <span id="massStatutCountBadge" class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded-full text-xs">0 commande(s)</span>
+    </div>
+
+    <div>
+      <label class="block text-xs font-medium text-slate-500 mb-1">Nouveau Statut à appliquer</label>
+      <select id="massStatutTargetSelect" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+        <option value="Commande en préparation chez Brainy Agency">⏳ Commande en préparation chez Brainy Agency</option>
+        <option value="Commande en preparation en chine">🏭 Commande en préparation en Chine</option>
+        <option value="Commande arrivée chez le transitaire">📦 Commande arrivée chez le transitaire</option>
+        <option value="Commande en transistion de chine vers lomé">🚢 Commande en transition de Chine vers Lomé</option>
+        <option value="Commande arriver au port de lomé en cours de dedouement">🛃 Commande arrivée au port de Lomé (dédouanement)</option>
+        <option value="Commande arriver chez Brainy Agency veiller passer pour recuperer">✅ Commande arrivée chez Brainy Agency, veuillez récupérer</option>
+      </select>
+    </div>
+
+    <div class="flex justify-end gap-3 pt-3 border-t">
+      <button onclick="fermerModalMassStatut()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium transition">
+        Annuler
+      </button>
+      <button onclick="executerMassStatut()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition shadow-md shadow-indigo-500/20">
+        Appliquer à toutes les commandes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL ENVOI WHATSAPP EN MASSE ================= -->
+<div id="modalMassWhatsapp" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 max-h-[90vh] flex flex-col">
+    <div class="flex justify-between items-center border-b pb-3 shrink-0">
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <span>💬</span> Envoi des statuts WhatsApp par Session
+      </h3>
+      <button onclick="fermerModalWhatsappMasse()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+    </div>
+
+    <div class="overflow-y-auto space-y-4 pr-1">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-2">Sélectionnez les Sessions / Saisons concernées :</label>
+        <div id="whatsappSessionCheckboxes" class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 max-h-40 overflow-y-auto">
+        </div>
+      </div>
+
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+        <div class="flex justify-between items-center font-medium text-slate-700">
+          <span>Sessions sélectionnées :</span>
+          <span id="waSelectedSessionsText" class="font-bold text-blue-600">Aucune</span>
+        </div>
+        <div class="flex justify-between items-center font-medium text-slate-700">
+          <span>Commandes & Clients concernés :</span>
+          <span id="waTotalCountBadge" class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">0 commande(s)</span>
+        </div>
+      </div>
+
+      <div id="waProgressContainer" class="hidden space-y-2 bg-blue-50 p-4 rounded-xl border border-blue-100">
+        <div class="flex justify-between text-xs font-semibold text-blue-800">
+          <span>Progression de l'envoi</span>
+          <span id="waProgressText">0 / 0</span>
+        </div>
+        <div class="w-full bg-blue-200 rounded-full h-2.5 overflow-hidden">
+          <div id="waProgressBar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-slate-600 pt-1">
+          <span class="text-emerald-700 font-medium">✅ Envoyés : <b id="waSentCount">0</b></span>
+          <span class="text-red-600 font-medium">⚠️ Échecs / Invalides : <b id="waFailCount">0</b></span>
+        </div>
+      </div>
+
+      <div id="waQueueContainer" class="hidden border border-slate-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-100 text-slate-600 uppercase">
+            <tr>
+              <th class="p-2">Code</th>
+              <th class="p-2">Client</th>
+              <th class="p-2">Téléphone</th>
+              <th class="p-2 text-right">Statut Envoi</th>
+            </tr>
+          </thead>
+          <tbody id="waQueueTableBody" class="divide-y divide-slate-100">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center pt-3 border-t shrink-0">
+      <button onclick="fermerModalWhatsappMasse()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium transition">
+        Fermer
+      </button>
+      <div class="flex gap-2">
+        <button id="btnPrepareWa" onclick="preparerEnvoiWhatsapp()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-md shadow-blue-500/20">
+          📋 Préparer la liste
+        </button>
+        <button id="btnStartWa" onclick="lancerEnvoiWhatsappQueue()" class="hidden px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition shadow-md shadow-emerald-500/20">
+          🚀 Lancer l'envoi WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCRIPT MODULE FIREBASE ET LOGIQUE APPLICATIVE ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc } 
@@ -172,10 +331,51 @@ const ADMIN_PASSWORD = "BRAINY AGENCY 96368928";
 const $ = id => document.getElementById(id);
 
 let allData = [];
+const collapsedSessions = new Set();
+
+let waQueue = [];
+let waSentCount = 0;
+let waFailCount = 0;
+
+/* ================= GÉNÉRATEUR AUTOMATIQUE DE CODE UNIQUE ================= */
+window.genererCodeUnique = async function() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let isUnique = false;
+  let code = "";
+  let attempts = 0;
+
+  while (!isUnique && attempts < 200) {
+    attempts++;
+    let randomPart = "";
+    for (let i = 0; i < 8; i++) {
+      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    code = "BRAINY" + randomPart;
+
+    // Vérifier l'unicité dans la base de données et localement
+    const existsLocally = allData.some(d => d.code === code);
+    if (!existsLocally) {
+      const snap = await getDoc(doc(db, "commandes", code));
+      if (!snap.exists()) {
+        isUnique = true;
+      }
+    }
+  }
+
+  if (isUnique) {
+    $("adminCode").value = code;
+    return code;
+  } else {
+    alert("Impossible de générer un code unique. Réessayez.");
+    return null;
+  }
+};
 
 /* ================= CLIENT PRO ================= */
 window.verifierCommande = async function () {
-  const code = $("code").value;
+  const code = $("code").value.trim();
+  if (!code) return;
+  
   const snap = await getDoc(doc(db, "commandes", code));
   const res = $("resultat");
 
@@ -223,6 +423,9 @@ window.verifierCommande = async function () {
       <div class="flex items-center gap-3 ${statut.includes("chine") ? "text-green-600 font-medium" : "text-slate-400"}">
         <div class="w-4 h-4 rounded-full ${statut.includes("chine") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En préparation en Chine
       </div>
+      <div class="flex items-center gap-3 ${statut.includes("transitaire") ? "text-green-600 font-medium" : "text-slate-400"}">
+        <div class="w-4 h-4 rounded-full ${statut.includes("transitaire") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ Arrivée chez le transitaire
+      </div>
       <div class="flex items-center gap-3 ${statut.includes("transistion") ? "text-green-600 font-medium" : "text-slate-400"}">
         <div class="w-4 h-4 rounded-full ${statut.includes("transistion") ? "bg-green-500" : "bg-slate-200"}"></div> ✔ En transit maritime/aérien (de la Chine vers Lomé)
       </div>
@@ -244,7 +447,14 @@ window.verifierCommande = async function () {
 
 /* ================= ADMIN ================= */
 window.ajouterCommande = async function () {
-  const code = $("adminCode").value;
+  let code = $("adminCode").value.trim();
+  
+  // Générer automatiquement si le champ code est vide
+  if (!code) {
+    code = await window.genererCodeUnique();
+    if (!code) return;
+  }
+
   const snap = await getDoc(doc(db, "commandes", code));
   const old = snap.exists() ? snap.data() : {};
 
@@ -263,11 +473,31 @@ window.ajouterCommande = async function () {
     statut: $("statut").value,
     total: $("total").value,
     visible: old.visible ?? true,
-    createdAt: old.createdAt || Date.now() // Conservé pour le tri chronologique
+    createdAt: old.createdAt || Date.now()
   });
 
-  chargerTableau();
   alert("✅ Commande enregistrée avec succès !");
+  await window.reinitialiserFormulaire();
+  chargerTableau();
+};
+
+window.reinitialiserFormulaire = async function() {
+  $("adminCode").value = "";
+  $("session").value = "";
+  $("nom").value = "";
+  $("tel").value = "";
+  $("livraison").value = "";
+  $("produits").value = "";
+  $("poids").value = "";
+  $("cbm").value = "";
+  $("paiement").value = "";
+  $("arrivee").value = "";
+  $("taxe").value = "";
+  $("dette").value = "";
+  $("total").value = "";
+  $("statut").selectedIndex = 0;
+  
+  await window.genererCodeUnique();
 };
 
 async function chargerTableau() {
@@ -282,11 +512,26 @@ async function chargerTableau() {
     sessionsSet.add(d.session || "Général");
   });
 
+  const sortedSessions = Array.from(sessionsSet).sort();
+
   // Mise à jour des suggestions de sessions (datalist)
-  $("sessionList").innerHTML = Array.from(sessionsSet)
+  $("sessionList").innerHTML = sortedSessions
     .map(s => `<option value="${s}">`).join("");
 
-  renderTable(allData);
+  // Mise à jour du filtre par session
+  const filterSelect = $("sessionFilter");
+  if (filterSelect) {
+    const currentVal = filterSelect.value;
+    filterSelect.innerHTML = `<option value="ALL">Toutes les Sessions / Saisons</option>` +
+      sortedSessions.map(s => `<option value="${s}">${s}</option>`).join("");
+    if (sortedSessions.includes(currentVal)) {
+      filterSelect.value = currentVal;
+    } else {
+      filterSelect.value = "ALL";
+    }
+  }
+
+  filtrerTableau();
 }
 
 function renderTable(dataToRender) {
@@ -309,55 +554,92 @@ function renderTable(dataToRender) {
   let html = "";
   // Afficher chaque session et ses commandes
   Object.keys(grouped).sort().forEach(sessionName => {
+    const isCollapsed = collapsedSessions.has(sessionName);
+    const count = grouped[sessionName].length;
+
     html += `
       <tr class="bg-blue-50 border-y border-blue-100">
-        <td colspan="4" class="p-3 font-semibold text-blue-800 text-sm">📁 Session : ${sessionName}</td>
+        <td colspan="4" class="p-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <span class="font-semibold text-blue-800 text-sm flex items-center gap-2">
+              📁 Session : ${sessionName}
+              <span class="text-xs font-normal text-blue-600 bg-blue-100 border border-blue-200 px-2 py-0.5 rounded-full">${count} commande(s)</span>
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="ouvrirModalChangerStatutMasse('${sessionName}')" class="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1">
+                <span>🔄</span> Statut
+              </button>
+              <button onclick="ouvrirModalWhatsappMasse('${sessionName}')" class="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1">
+                <span>💬</span> WhatsApp
+              </button>
+              <button onclick="toggleSessionCollapse('${sessionName}')" class="text-xs bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 px-2.5 py-1 rounded-md font-medium transition">
+                ${isCollapsed ? '👁️ Afficher les commandes' : '🙈 Masquer les commandes'}
+              </button>
+            </div>
+          </div>
+        </td>
       </tr>
     `;
-    grouped[sessionName].forEach(d => {
-      html += `
-        <tr class="hover:bg-slate-50 transition group">
-          <td class="p-4 font-mono text-blue-600 font-medium">${d.code}</td>
-          <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
-          <td class="p-4 text-slate-600">${d.tel || "-"}</td>
-          <td class="p-4 text-right space-x-2">
-            <button onclick="modifier('${d.code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
-            <button onclick="partager('${d.code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
-            <button onclick="toggleVisible('${d.code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
-              ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
-            </button>
-          </td>
-        </tr>`;
-    });
+
+    if (!isCollapsed) {
+      grouped[sessionName].forEach(d => {
+        html += `
+          <tr class="hover:bg-slate-50 transition group">
+            <td class="p-4 font-mono text-blue-600 font-medium">${d.code}</td>
+            <td class="p-4 font-medium text-slate-800">${d.nom || "-"}</td>
+            <td class="p-4 text-slate-600">${d.tel || "-"}</td>
+            <td class="p-4 text-right space-x-2">
+              <button onclick="modifier('${d.code}')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">✏️ Modifier</button>
+              <button onclick="partager('${d.code}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg font-medium transition text-xs">💬 WhatsApp</button>
+              <button onclick="toggleVisible('${d.code}', ${d.visible !== false})" class="${d.visible === false ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-red-100 text-red-700 hover:bg-red-200'} px-3 py-1.5 rounded-lg font-medium transition text-xs">
+                ${d.visible === false ? "👁️ Activer" : "🚫 Désactiver"}
+              </button>
+            </td>
+          </tr>`;
+      });
+    }
   });
 
   table.innerHTML = html;
 }
 
+window.toggleSessionCollapse = function(sessionName) {
+  if (collapsedSessions.has(sessionName)) {
+    collapsedSessions.delete(sessionName);
+  } else {
+    collapsedSessions.add(sessionName);
+  }
+  filtrerTableau();
+};
+
 window.filtrerTableau = () => {
-  const val = $("searchInput").value.toLowerCase();
-  const filtered = allData.filter(d => 
-    (d.nom && d.nom.toLowerCase().includes(val)) || 
-    (d.code && d.code.toLowerCase().includes(val))
-  );
+  const searchVal = ($("searchInput")?.value || "").toLowerCase();
+  const sessionVal = $("sessionFilter")?.value || "ALL";
+
+  const filtered = allData.filter(d => {
+    const matchSearch = !searchVal || 
+      (d.nom && d.nom.toLowerCase().includes(searchVal)) || 
+      (d.code && d.code.toLowerCase().includes(searchVal));
+      
+    const matchSession = (sessionVal === "ALL") || 
+      ((d.session || "Général") === sessionVal);
+
+    return matchSearch && matchSession;
+  });
+
   renderTable(filtered);
 };
 
-/* ================= ACTIONS ================= */
+/* ================= ACTIONS UNITAIPES & WHATSAPP ================= */
 window.modifier = async code => {
   const d = (await getDoc(doc(db, "commandes", code))).data();
   Object.keys(d).forEach(k => $(k) && ($(k).value = d[k]));
   $("adminCode").value = code;
-  // Scroll fluide vers le haut pour éditer
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-window.partager = async code => {
-  const snap = await getDoc(doc(db, "commandes", code));
-  if (!snap.exists()) return;
-  const d = snap.data();
-
-  const message = `📦 *Bonjour ${d.nom || "Client"}*, voici les détails de votre commande :
+window.genererMessageWhatsApp = function(d, code) {
+  return `📦 *Bonjour ${d.nom || "Client"}*, voici les détails de votre commande :
 
 🔹 *Code de suivi* : ${code}
 📦 *Produits* : ${d.produits || "-"}
@@ -374,7 +656,14 @@ ${d.statut || "-"}
 Voici le lien pour suivre votre commande: https://brainybasededonnee-lang.github.io/BRAINYWALLET/
 Merci de votre confiance !
 L'équipe Brainy Agency`;
+};
 
+window.partager = async code => {
+  const snap = await getDoc(doc(db, "commandes", code));
+  if (!snap.exists()) return;
+  const d = snap.data();
+
+  const message = genererMessageWhatsApp(d, code);
   window.open(`https://wa.me/${d.tel || ""}?text=${encodeURIComponent(message)}`);
 };
 
@@ -383,13 +672,219 @@ window.toggleVisible = async (code, current) => {
   chargerTableau();
 };
 
-/* ================= NAV ================= */
-window.showAdmin = () => {
+/* ================= LOGIQUE MODAL MODIFICATION DU STATUT EN MASSE ================= */
+window.ouvrirModalChangerStatutMasse = function(defaultSession = null) {
+  const sessions = Array.from(new Set(allData.map(d => d.session || "Général"))).sort();
+  const select = $("massStatutSessionSelect");
+  select.innerHTML = sessions.map(s => `<option value="${s}">${s}</option>`).join("");
+  
+  if (defaultSession && sessions.includes(defaultSession)) {
+    select.value = defaultSession;
+  }
+  
+  actualiserCompteMassStatut();
+  $("modalMassStatut").classList.remove("hidden");
+};
+
+window.fermerModalMassStatut = function() {
+  $("modalMassStatut").classList.add("hidden");
+};
+
+window.actualiserCompteMassStatut = function() {
+  const sess = $("massStatutSessionSelect").value;
+  const count = allData.filter(d => (d.session || "Général") === sess).length;
+  $("massStatutCountBadge").innerText = `${count} commande(s)`;
+};
+
+window.executerMassStatut = async function() {
+  const sess = $("massStatutSessionSelect").value;
+  const nouveauStatut = $("massStatutTargetSelect").value;
+  const commandes = allData.filter(d => (d.session || "Général") === sess);
+
+  if (commandes.length === 0) {
+    alert("Aucune commande dans cette Session / Saison.");
+    return;
+  }
+
+  const confirmation = confirm(`Vous êtes sur le point de modifier le statut de ${commandes.length} commandes de la Session / Saison sélectionnée. Voulez-vous continuer ?`);
+  
+  if (!confirmation) return;
+
+  try {
+    for (const cmd of commandes) {
+      await updateDoc(doc(db, "commandes", cmd.code), { statut: nouveauStatut });
+    }
+    alert(`✅ Le statut de ${commandes.length} commande(s) a été mis à jour avec succès !`);
+    fermerModalMassStatut();
+    chargerTableau();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Une erreur est survenue lors de la modification des statuts.");
+  }
+};
+
+/* ================= LOGIQUE MODAL ENVOI WHATSAPP EN MASSE ================= */
+window.ouvrirModalWhatsappMasse = function(defaultSession = null) {
+  const sessions = Array.from(new Set(allData.map(d => d.session || "Général"))).sort();
+  const container = $("whatsappSessionCheckboxes");
+  
+  container.innerHTML = sessions.map(s => `
+    <label class="flex items-center gap-2 p-1.5 hover:bg-white rounded-lg transition text-xs font-medium text-slate-700 cursor-pointer">
+      <input type="checkbox" value="${s}" ${defaultSession === s ? "checked" : ""} onchange="actualiserStatsWhatsappMasse()" class="wa-session-cb rounded text-blue-600 focus:ring-blue-500">
+      <span>${s}</span>
+    </label>
+  `).join("");
+
+  $("waProgressContainer").classList.add("hidden");
+  $("waQueueContainer").classList.add("hidden");
+  $("btnStartWa").classList.add("hidden");
+  $("btnPrepareWa").classList.remove("hidden");
+  
+  actualiserStatsWhatsappMasse();
+  $("modalMassWhatsapp").classList.remove("hidden");
+};
+
+window.fermerModalWhatsappMasse = function() {
+  $("modalMassWhatsapp").classList.add("hidden");
+};
+
+window.actualiserStatsWhatsappMasse = function() {
+  const checkboxes = document.querySelectorAll(".wa-session-cb:checked");
+  const selectedSessions = Array.from(checkboxes).map(cb => cb.value);
+  
+  $("waSelectedSessionsText").innerText = selectedSessions.length > 0 ? selectedSessions.join(", ") : "Aucune";
+
+  const matchingOrders = allData.filter(d => selectedSessions.includes(d.session || "Général"));
+  $("waTotalCountBadge").innerText = `${matchingOrders.length} commande(s)`;
+};
+
+window.preparerEnvoiWhatsapp = function() {
+  const checkboxes = document.querySelectorAll(".wa-session-cb:checked");
+  const selectedSessions = Array.from(checkboxes).map(cb => cb.value);
+
+  if (selectedSessions.length === 0) {
+    alert("Veuillez sélectionner au moins une Session / Saison.");
+    return;
+  }
+
+  const orders = allData.filter(d => selectedSessions.includes(d.session || "Général"));
+
+  if (orders.length === 0) {
+    alert("Aucune commande trouvée pour la/les Session(s) sélectionnée(s).");
+    return;
+  }
+
+  waQueue = orders.map(d => ({
+    code: d.code,
+    data: d,
+    tel: (d.tel || "").trim(),
+    status: (d.tel || "").trim() ? "pending" : "invalid"
+  }));
+
+  waSentCount = 0;
+  waFailCount = waQueue.filter(q => q.status === "invalid").length;
+
+  afficherQueueWhatsapp();
+
+  $("waProgressContainer").classList.remove("hidden");
+  $("waQueueContainer").classList.remove("hidden");
+  $("btnPrepareWa").classList.add("hidden");
+  $("btnStartWa").classList.remove("hidden");
+
+  mettreAJourProgressionWa();
+};
+
+function afficherQueueWhatsapp() {
+  const tbody = $("waQueueTableBody");
+  tbody.innerHTML = waQueue.map((item, idx) => {
+    let statusBadge = "";
+    if (item.status === "pending") {
+      statusBadge = `<span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-[10px] font-semibold">⏳ En attente</span>`;
+    } else if (item.status === "sent") {
+      statusBadge = `<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-semibold">✅ Envoyé</span>`;
+    } else if (item.status === "invalid") {
+      statusBadge = `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-[10px] font-semibold">⚠️ Numéro invalide</span>`;
+    }
+
+    return `
+      <tr id="waRow-${idx}" class="hover:bg-slate-50 transition">
+        <td class="p-2 font-mono text-blue-600 font-medium">${item.code}</td>
+        <td class="p-2 font-medium text-slate-700">${item.data.nom || "-"}</td>
+        <td class="p-2 text-slate-500">${item.tel || "<span class='text-red-500 font-medium'>Absent</span>"}</td>
+        <td class="p-2 text-right">
+          <div class="flex items-center justify-end gap-2">
+            ${statusBadge}
+            ${item.tel ? `<button onclick="envoyerMessageClientUnitaire(${idx})" class="text-[11px] bg-green-50 text-green-700 hover:bg-green-100 px-2 py-0.5 rounded border border-green-200 font-medium transition">Envoyer 💬</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function mettreAJourProgressionWa() {
+  const total = waQueue.length;
+  const processed = waSentCount + waFailCount;
+  const pct = total > 0 ? Math.round((processed / total) * 100) : 0;
+
+  $("waProgressText").innerText = `${processed} / ${total}`;
+  $("waProgressBar").style.width = `${pct}%`;
+  $("waSentCount").innerText = waSentCount;
+  $("waFailCount").innerText = waFailCount;
+}
+
+window.envoyerMessageClientUnitaire = function(idx) {
+  const item = waQueue[idx];
+  if (!item || !item.tel) return;
+
+  const msg = genererMessageWhatsApp(item.data, item.code);
+  window.open(`https://wa.me/${item.tel}?text=${encodeURIComponent(msg)}`, '_blank');
+  
+  if (item.status !== "sent") {
+    item.status = "sent";
+    waSentCount++;
+    mettreAJourProgressionWa();
+    afficherQueueWhatsapp();
+  }
+};
+
+window.lancerEnvoiWhatsappQueue = async function() {
+  const pendingItems = waQueue.filter(q => q.status === "pending");
+  if (pendingItems.length === 0) {
+    alert("Aucun client en attente avec un numéro valide.");
+    return;
+  }
+
+  const confirmMsg = `Vous allez ouvrir l'envoi WhatsApp pour ${pendingItems.length} client(s). Confirmer ?`;
+  if (!confirm(confirmMsg)) return;
+
+  for (let i = 0; i < waQueue.length; i++) {
+    const item = waQueue[i];
+    if (item.status === "pending" && item.tel) {
+      const msg = genererMessageWhatsApp(item.data, item.code);
+      window.open(`https://wa.me/${item.tel}?text=${encodeURIComponent(msg)}`, '_blank');
+      item.status = "sent";
+      waSentCount++;
+      mettreAJourProgressionWa();
+      afficherQueueWhatsapp();
+      
+      await new Promise(res => setTimeout(res, 800));
+    }
+  }
+
+  alert("✅ Traitement des envois WhatsApp terminé !");
+};
+
+/* ================= NAVIGATION & INITIALISATION ================= */
+window.showAdmin = async () => {
   const pass = prompt("Mot de passe administrateur:");
   if (pass !== ADMIN_PASSWORD) return alert("Mot de passe incorrect ❌");
   $("clientPage").classList.add("hidden");
   $("adminPage").classList.remove("hidden");
-  chargerTableau();
+  await chargerTableau();
+  if (!$("adminCode").value) {
+    await genererCodeUnique();
+  }
 };
 
 window.showClient = () => {
